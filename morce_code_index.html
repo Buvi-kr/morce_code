@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>우주 신호 해독기</title>
+    <style>
+        :root {
+            --bg-color: #07090f;
+            --primary: #00f0ff;
+            --success: #39ff14;
+            --danger: #ff003c;
+            --panel: rgba(16, 22, 38, 0.7);
+        }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 2px);
+            background-size: 100% 100%, 300px 300px;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            color: white;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 95%; max-width: 500px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .header-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin: 10px 0 5px 0;
+            letter-spacing: 1px;
+            font-weight: normal; /* 굵게 제외 */
+        }
+        
+        .header-subtitle {
+            font-size: 0.9rem;
+            color: #a0aabf;
+            margin-bottom: 20px;
+        }
+
+        /* 모스 부호표 */
+        .morse-chart {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+        .morse-item {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 3px;
+        }
+        .m-char { color: var(--primary); font-family: 'Courier New', monospace; }
+        .m-code { color: white; letter-spacing: 1px; font-family: 'Courier New', monospace; }
+
+        .decoder-box {
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 유튜브 플레이어 영역 */
+        .video-container {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid var(--primary);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-label {
+            font-size: 0.9rem;
+            color: white;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .code-input {
+            width: 80%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            color: var(--primary);
+            font-size: 2.5rem;
+            text-align: center;
+            padding: 10px 0;
+            text-transform: uppercase;
+            outline: none;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .code-input::placeholder {
+            color: rgba(0, 240, 255, 0.2);
+            letter-spacing: 8px;
+        }
+
+        .btn-submit {
+            width: 85%;
+            padding: 18px;
+            border: none; border-radius: 10px;
+            background: var(--primary);
+            color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* 결과 창 오버레이 */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .overlay-content {
+            text-align: center;
+            max-width: 400px;
+        }
+        .btn-close {
+            margin-top: 30px;
+            padding: 15px 45px;
+            border: 1px solid white;
+            background: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="header-title">미확인 구조 신호 수신기</h1>
+        <p class="header-subtitle">여기는 우주 관제소. 미확인 신호를 해독하세요.</p>
+        
+        <div class="morse-chart" id="morseChart"></div>
+
+        <div class="decoder-box">
+            <div class="video-container">
+                <iframe width="100%" height="180" 
+                    src="https://www.youtube.com/embed/NiDguS3Q-vI?rel=0&modestbranding=1&loop=1&playlist=NiDguS3Q-vI" 
+                    title="모스 신호 소리" frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <div class="input-group">
+                <label for="codeInput" class="input-label">소리를 듣고 4글자 암호를 입력하세요.</label>
+                <input type="text" id="codeInput" class="code-input" maxlength="4" placeholder="____" autocomplete="off" spellcheck="false">
+            </div>
+
+            <button class="btn-submit" id="submitBtn">데이터 해독 전송</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <div id="resultIcon" style="font-size: 5rem; margin-bottom: 15px;"></div>
+            <h2 id="resultTitle" style="font-size: 2.2rem; margin-bottom: 15px; font-weight: normal;"></h2>
+            <p id="resultDesc" style="color: #ccc; line-height: 1.6; font-size: 1.1rem;"></p>
+            <button class="btn-close" onclick="closeOverlay()">돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_WORD = "STAR";
+        const morseData = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..'
+        };
+
+        // 부호표 자동 생성
+        const chartDiv = document.getElementById('morseChart');
+        Object.keys(morseData).forEach(char => {
+            const item = document.createElement('div');
+            item.className = 'morse-item';
+            item.innerHTML = `<span class="m-char">${char}</span><span class="m-code">${morseData[char]}</span>`;
+            chartDiv.appendChild(item);
+        });
+
+        const input = document.getElementById('codeInput');
+
+        // 입력창 편의 기능 (영어만 입력, 대문자 자동 변환)
+        input.addEventListener('input', (e) => {
+            input.value = input.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+        });
+
+        // 엔터키 지원
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+
+        function checkAnswer() {
+            const val = input.value;
+            if (!val) {
+                alert("해독한 암호를 입력해주세요.");
+                input.focus();
+                return;
+            }
+
+            const overlay = document.getElementById('overlay');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const desc = document.getElementById('resultDesc');
+
+            overlay.style.display = "flex";
+
+            if (val === CORRECT_WORD) {
+                icon.innerText = "🚀";
+                title.innerText = "해독 성공";
+                title.style.color = "var(--success)";
+                desc.innerHTML = "신호 해독에 성공했습니다.<br>구조팀이 좌표로 이동을 시작합니다.";
+            } else {
+                icon.innerText = "⚠️";
+                title.innerText = "해독 실패";
+                title.style.color = "var(--danger)";
+                desc.innerHTML = "잘못된 암호입니다.<br>소리를 듣고 부호표와 대조해 보세요.";
+            }
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = "none";
+            // 정답을 맞췄을 때만 입력창 비우기
+            if (input.value === CORRECT_WORD) input.value = "";
+            input.focus();
+        }
+
+        // 페이지 로드 시 입력창에 포커스
+        window.onload = () => input.focus();
+    </script>
+</body>
+</html>
