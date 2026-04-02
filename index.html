@@ -6,146 +6,240 @@
     <title>우주 신호 해독기</title>
     <style>
         :root {
-            --bg-color: #07090f;
+            --bg-color: #05070a;
             --primary: #00f0ff;
+            --primary-glow: rgba(0, 240, 255, 0.6);
             --success: #39ff14;
             --danger: #ff003c;
-            --panel: rgba(16, 22, 38, 0.7);
+            --panel-bg: rgba(16, 22, 38, 0.4);
+            --panel-border: rgba(0, 240, 255, 0.2);
         }
         
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
-            background-image:
-                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.1) 0%, transparent 60%),
-                radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 2px);
-            background-size: 100% 100%, 300px 300px;
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.05) 0%, transparent 70%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
             color: white;
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh;
             overflow-x: hidden;
+            animation: bg-scroll 20s linear infinite;
+        }
+
+        @keyframes bg-scroll {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 0 0, 30px 30px, 30px 30px; }
         }
 
         .container {
-            width: 95%; max-width: 500px;
-            margin: 20px 0;
+            width: 90%; max-width: 550px;
+            margin: 30px 0;
             text-align: center;
+            animation: fade-in 1s ease-out;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header-title {
             color: var(--primary);
-            font-size: 1.8rem;
-            margin: 10px 0 5px 0;
-            letter-spacing: 1px;
-            font-weight: normal; /* 굵게 제외 */
+            font-size: 2.2rem;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--primary-glow);
         }
         
         .header-subtitle {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #a0aabf;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
         }
 
-        /* 모스 부호표 */
+        /* 모스 부호표 - 글래스모피즘 적용 */
         .morse-chart {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            font-size: 0.85rem;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
+
         .morse-item {
             display: flex;
-            flex-direction: column;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 3px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 5px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
         }
-        .m-char { color: var(--primary); font-family: 'Courier New', monospace; }
-        .m-code { color: white; letter-spacing: 1px; font-family: 'Courier New', monospace; }
+
+        .morse-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .m-char { color: var(--primary); font-weight: bold; font-size: 1.1rem; }
+        .m-code { color: #fff; letter-spacing: 2px; }
 
         .decoder-box {
-            background: var(--panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--primary);
             border-radius: 20px;
-            padding: 30px 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* 유튜브 플레이어 영역 */
+        /* 로컬 비디오 플레이어 영역 */
         .video-container {
-            margin-bottom: 20px;
-            border-radius: 10px;
+            margin-bottom: 25px;
+            border-radius: 12px;
             overflow: hidden;
             background: #000;
             border: 1px solid var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            position: relative;
         }
 
-        .input-group { margin-bottom: 20px; }
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+            outline: none;
+        }
+
+        .input-group { margin-bottom: 25px; }
         .input-label {
-            font-size: 0.9rem;
-            color: white;
-            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #e0e5ff;
+            margin-bottom: 12px;
             display: block;
         }
+
         .code-input {
             width: 80%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--primary);
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
             color: var(--primary);
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
             text-transform: uppercase;
             outline: none;
-            letter-spacing: 8px;
-            font-family: 'Courier New', monospace;
+            letter-spacing: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
+
+        .code-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 15px var(--primary-glow);
+        }
+
         .code-input::placeholder {
-            color: rgba(0, 240, 255, 0.2);
-            letter-spacing: 8px;
+            color: rgba(0, 240, 255, 0.15);
+            letter-spacing: 12px;
         }
 
         .btn-submit {
-            width: 85%;
+            width: 100%;
             padding: 18px;
-            border: none; border-radius: 10px;
-            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, #009dff 100%);
             color: #000;
             font-size: 1.2rem;
+            font-weight: bold;
             cursor: pointer;
-            font-family: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
         }
 
         /* 결과 창 오버레이 */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(5, 7, 10, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: none; flex-direction: column; align-items: center; justify-content: center;
             z-index: 100;
             padding: 20px;
             box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+
+        .overlay.active {
+            display: flex;
+            opacity: 1;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         .overlay-content {
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
+            background: rgba(20, 25, 40, 0.8);
+            padding: 50px 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
+
         .btn-close {
-            margin-top: 30px;
-            padding: 15px 45px;
-            border: 1px solid white;
-            background: none;
+            margin-top: 35px;
+            padding: 15px 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
             color: white;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-family: inherit;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: white;
+            color: #000;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 480px) {
+            .morse-chart { grid-template-columns: repeat(3, 1fr); font-size: 0.9rem; }
+            .header-title { font-size: 1.8rem; }
+            .code-input { width: 90%; font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -159,16 +253,14 @@
 
         <div class="decoder-box">
             <div class="video-container">
-                <iframe width="100%" height="180" 
-                    src="https://www.youtube.com/embed/NiDguS3Q-vI?rel=0&modestbranding=1&loop=1&playlist=NiDguS3Q-vI" 
-                    title="모스 신호 소리" frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
+                <video controls loop>
+                    <source src="모스부호_파형.mp4" type="video/mp4">
+                    브라우저가 비디오 재생을 지원하지 않습니다.
+                </video>
             </div>
 
             <div class="input-group">
-                <label for="codeInput" class="input-label">소리를 듣고 4글자 암호를 입력하세요.</label>
+                <label for="codeInput" class="input-label">영상을 재생하고 4글자 암호를 입력하세요.</label>
                 <input type="text" id="codeInput" class="code-input" maxlength="4" placeholder="____" autocomplete="off" spellcheck="false">
             </div>
 
@@ -178,10 +270,10 @@
 
     <div class="overlay" id="overlay">
         <div class="overlay-content">
-            <div id="resultIcon" style="font-size: 5rem; margin-bottom: 15px;"></div>
-            <h2 id="resultTitle" style="font-size: 2.2rem; margin-bottom: 15px; font-weight: normal;"></h2>
-            <p id="resultDesc" style="color: #ccc; line-height: 1.6; font-size: 1.1rem;"></p>
-            <button class="btn-close" onclick="closeOverlay()">돌아가기</button>
+            <div id="resultIcon" style="font-size: 5rem; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.3);"></div>
+            <h2 id="resultTitle" style="font-size: 2.2rem; margin-bottom: 15px; font-weight: bold; margin-top: 0;"></h2>
+            <p id="resultDesc" style="color: #d0d5e0; line-height: 1.6; font-size: 1.1rem; margin-bottom: 0;"></p>
+            <button class="btn-close" onclick="closeOverlay()">관제소로 돌아가기</button>
         </div>
     </div>
 
@@ -207,7 +299,7 @@
         const input = document.getElementById('codeInput');
 
         // 입력창 편의 기능 (영어만 입력, 대문자 자동 변환)
-        input.addEventListener('input', (e) => {
+        input.addEventListener('input', () => {
             input.value = input.value.replace(/[^A-Za-z]/g, '').toUpperCase();
         });
 
@@ -220,8 +312,8 @@
 
         function checkAnswer() {
             const val = input.value;
-            if (!val) {
-                alert("해독한 암호를 입력해주세요.");
+            if (val.length < 4) {
+                alert("4글자 암호를 모두 입력해주세요.");
                 input.focus();
                 return;
             }
@@ -231,23 +323,28 @@
             const title = document.getElementById('resultTitle');
             const desc = document.getElementById('resultDesc');
 
-            overlay.style.display = "flex";
-
             if (val === CORRECT_WORD) {
                 icon.innerText = "🚀";
-                title.innerText = "해독 성공";
+                title.innerText = "해독 성공!";
                 title.style.color = "var(--success)";
-                desc.innerHTML = "신호 해독에 성공했습니다.<br>구조팀이 좌표로 이동을 시작합니다.";
+                title.style.textShadow = "0 0 15px rgba(57, 255, 20, 0.4)";
+                desc.innerHTML = "신호 해독에 성공했습니다.<br>구조팀이 해당 좌표로 이동을 시작합니다.";
             } else {
                 icon.innerText = "⚠️";
                 title.innerText = "해독 실패";
                 title.style.color = "var(--danger)";
-                desc.innerHTML = "잘못된 암호입니다.<br>소리를 듣고 부호표와 대조해 보세요.";
+                title.style.textShadow = "0 0 15px rgba(255, 0, 60, 0.4)";
+                desc.innerHTML = "잘못된 암호입니다.<br>영상의 소리와 파형을 다시 확인해 보세요.";
             }
+            
+            // CSS 애니메이션을 위해 active 클래스 추가
+            overlay.classList.add('active');
         }
 
         function closeOverlay() {
-            document.getElementById('overlay').style.display = "none";
+            const overlay = document.getElementById('overlay');
+            overlay.classList.remove('active');
+            
             // 정답을 맞췄을 때만 입력창 비우기
             if (input.value === CORRECT_WORD) input.value = "";
             input.focus();
