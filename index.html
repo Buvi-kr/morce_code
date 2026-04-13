@@ -23,36 +23,51 @@
             background-color: #000;
             font-family: 'Noto+Sans+KR', sans-serif;
             color: #fff;
-            height: 100vh;
+            min-height: 100vh;
             display: flex; flex-direction: column;
-            overflow: hidden; /* 가로/세로 스크롤 원천 차단 */
+            overflow-x: hidden; /* 가로 짤림 방지 */
+            overflow-y: auto;   /* Y, Z 확인을 위한 스크롤 허용 */
         }
 
         .video-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; object-fit: cover;
             opacity: 0.35; filter: contrast(1.1) brightness(0.4);
+            pointer-events: none;
         }
 
-        /* 1. 슬림 헤더 */
         header { 
-            padding: 8px 12px; z-index: 110;
-            display: flex; align-items: center; gap: 10px;
+            padding: 10px 15px; z-index: 110;
+            display: flex; align-items: center; justify-content: space-between;
             background: rgba(0,0,0,0.85); border-bottom: 2px solid var(--primary);
-            flex-shrink: 0;
+            position: sticky; top: 0;
         }
+        .header-left { display: flex; align-items: center; gap: 10px; }
         .logo { height: 20px; filter: drop-shadow(0 0 5px var(--primary-glow)); }
         .main-title { font-size: 1rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); margin: 0; }
-
-        /* 2. 작업 보드 (상반부) */
-        .workspace {
-            padding: 10px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
-            display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+        
+        /* 소리 버튼 */
+        .sound-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--primary);
+            color: var(--primary); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-family: 'Orbitron'; font-weight: 900;
+            cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
 
+        /* [수정] 스크롤 시 상단 입력창은 계속 보이도록 */
+        .workspace-wrap {
+            position: sticky; top: 46px; z-index: 100;
+            padding: 10px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+        }
+        .decode-machine {
+            background: var(--glass); border: 2px solid var(--glass-border);
+            border-radius: 18px; padding: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; gap: 8px;
+        }
         .code-display { display: flex; justify-content: center; gap: 6px; }
         .slot {
-            flex: 1; max-width: 55px; height: 65px;
+            flex: 1; max-width: 55px; height: 60px;
             background: #000; border: 2.5px solid #333;
             border-radius: 12px; display: flex; align-items: center; justify-content: center;
             font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900;
@@ -64,29 +79,16 @@
         .control-panel { display: flex; gap: 8px; }
         .btn {
             flex: 1; padding: 14px; border: none; border-radius: 15px;
-            font-size: 1.1rem; font-weight: 900; cursor: pointer; transition: 0.1s;
+            font-size: 1.1rem; font-weight: 900; cursor: pointer;
         }
-        .btn:active { transform: scale(0.95); }
         .btn-clear { background: #333; color: #888; }
         .btn-submit { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: #fff; }
 
-        /* 3. [개선] 꽉 찬 4열 무스크롤 그리드 */
-        main { 
-            flex: 1; padding: 10px; z-index: 10;
-            display: flex; flex-direction: column; min-height: 0;
-        }
+        /* [개선] 4열 그리드 및 하단 여백 결합 */
+        main { flex: 1; padding: 10px; z-index: 10; padding-bottom: 80px; }
         .morse-grid {
-            width: 100%; display: grid; gap: 6px; flex: 1;
-            grid-template-columns: repeat(4, 1fr); /* 모바일 무조건 4열 */
-            grid-template-rows: repeat(7, 1fr);
-        }
-
-        /* 큰 화면 대응 */
-        @media (min-width: 700px) {
-            .morse-grid { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); }
-        }
-        @media (min-width: 1000px) {
-            .morse-grid { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(4, 1fr); }
+            width: 100%; display: grid; gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
         }
 
         .morse-btn {
@@ -94,52 +96,56 @@
             border: 1.5px solid var(--glass-border);
             border-radius: 14px; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.1s;
-            overflow: hidden; /* 짤림 방지 */
+            padding: 15px 5px; cursor: pointer; transition: 0.1s;
         }
         .morse-btn:active { background: var(--primary); transform: scale(0.9); }
-        .morse-btn:active .m-char, .morse-btn:active .dot, .morse-btn:active .dash { color: #000; background: #000; }
+        .morse-btn:active .m-char { color: #000; }
         
-        .m-char { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--primary); font-weight: 900; line-height: 1; margin-bottom: 4px; }
+        .m-char { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--primary); font-weight: 900; line-height: 1; margin-bottom: 6px; }
         
         .m-code { 
             display: flex; align-items: center; justify-content: center; gap: 3px;
-            background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 8px;
+            background: rgba(0,0,0,0.4); padding: 4px 5px; border-radius: 6px;
         }
-        .dot { width: 7px; height: 7px; background: #fff; border-radius: 50%; opacity: 0.9; }
-        .dash { width: 15px; height: 7px; background: #fff; border-radius: 4px; opacity: 0.9; }
+        .dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+        .dash { width: 14px; height: 6px; background: #fff; border-radius: 3px; }
 
-        /* 결과 화면 */
-        #successLayer {
+        /* 성공/시작 화면 */
+        #layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); backdrop-filter: blur(30px);
             z-index: 2000; display: none; flex-direction: column;
             align-items: center; justify-content: center; text-align: center;
         }
-        #successLayer.active { display: flex; }
-        .success-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); }
+        #layer.active { display: flex; }
+        .modal-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); width: 85%; max-width: 320px; }
     </style>
 </head>
-<body>
-    <video class="video-bg" autoplay loop muted playsinline>
+<body onclick="enableAudio()">
+    <video class="video-bg" id="bgVideo" loop playsinline muted>
         <source src="모스부호_파형.mp4" type="video/mp4">
     </video>
 
     <header>
-        <img src="logo.png" alt="천문과학관" class="logo">
-        <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
+        <div class="header-left">
+            <img src="logo.png" alt="천문과학관" class="logo">
+            <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
+        </div>
+        <button class="sound-btn" id="soundBtn" onclick="toggleMute(event)">🔇 OFF</button>
     </header>
 
-    <div class="workspace" id="machine">
-        <div class="code-display">
-            <div class="slot active" id="slot0"></div>
-            <div class="slot" id="slot1"></div>
-            <div class="slot" id="slot2"></div>
-            <div class="slot" id="slot3"></div>
-        </div>
-        <div class="control-panel">
-            <button class="btn btn-clear" onclick="clearInput()">지 우 기</button>
-            <button class="btn btn-submit" onclick="validate()">해 독 하 기</button>
+    <div class="workspace-wrap">
+        <div class="decode-machine" id="machine">
+            <div class="code-display">
+                <div class="slot active" id="slot0"></div>
+                <div class="slot" id="slot1"></div>
+                <div class="slot" id="slot2"></div>
+                <div class="slot" id="slot3"></div>
+            </div>
+            <div class="control-panel">
+                <button class="btn btn-clear" onclick="clearInput()">지 우 기</button>
+                <button class="btn btn-submit" onclick="validate()">해 독 하 기</button>
+            </div>
         </div>
     </div>
 
@@ -147,11 +153,12 @@
         <div class="morse-grid" id="morseGrid"></div>
     </main>
 
-    <div id="successLayer">
-        <div class="success-box">
-            <div style="font-size: 4rem;">🛸</div>
-            <h2 style="font-family: 'Orbitron'; font-size: 2.22rem; color: var(--success); margin: 15px 0;">성공!</h2>
-            <button class="btn btn-submit" style="width: 100%;" onclick="resetGame()">다시 도전</button>
+    <div id="layer">
+        <div class="modal-box" id="modalBox">
+            <div id="modalIcon" style="font-size: 5rem;">🛸</div>
+            <h2 id="modalTitle" style="font-family: 'Orbitron'; font-size: 2.2rem; color: var(--success); margin: 15px 0;">반갑습니다!</h2>
+            <p id="modalDesc" style="color: #eee; margin-bottom: 25px;">우주 신호 해독을 시작하려면<br>아래 버튼을 눌러주세요.</p>
+            <button class="btn btn-submit" style="width: 100%;" id="modalBtn" onclick="startSystem()">관측 시작하기</button>
         </div>
     </div>
 
@@ -164,6 +171,42 @@
             'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
             'Y': '-.--', 'Z': '--..'
         };
+
+        const bgVideo = document.getElementById('bgVideo');
+        const soundBtn = document.getElementById('soundBtn');
+        const layer = document.getElementById('layer');
+        let audioEnabled = false;
+
+        // 초기 시작 모달 표시
+        window.addEventListener('load', () => {
+            layer.classList.add('active');
+        });
+
+        function startSystem() {
+            layer.classList.remove('active');
+            bgVideo.muted = false;
+            bgVideo.play();
+            soundBtn.innerText = "🔊 ON";
+            audioEnabled = true;
+        }
+
+        function toggleMute(e) {
+            e.stopPropagation();
+            if (bgVideo.muted) {
+                bgVideo.muted = false;
+                soundBtn.innerText = "🔊 ON";
+            } else {
+                bgVideo.muted = true;
+                soundBtn.innerText = "🔇 OFF";
+            }
+        }
+
+        // 브라우저 정책 대응 (터치 시 오디오 활성화 시도)
+        function enableAudio() {
+            if(!audioEnabled) {
+                bgVideo.play();
+            }
+        }
 
         let userInput = [];
         const grid = document.getElementById('morseGrid');
@@ -194,7 +237,6 @@
         function clearInput() {
             userInput = [];
             updateDisplay();
-            document.getElementById('machine').classList.remove('error');
         }
 
         function updateDisplay() {
@@ -208,21 +250,22 @@
         function validate() {
             if (userInput.length < 4) return;
             if (userInput.join('') === TARGET) {
-                document.getElementById('successLayer').classList.add('active');
+                showSuccess();
             } else {
                 const machine = document.getElementById('machine');
-                machine.classList.add('error');
+                machine.style.borderColor = "var(--danger)";
                 if (navigator.vibrate) navigator.vibrate(200);
-                setTimeout(() => {
-                    machine.classList.remove('error');
-                    clearInput();
-                }, 800);
+                setTimeout(() => { machine.style.borderColor = "var(--glass-border)"; clearInput(); }, 800);
             }
         }
 
-        function resetGame() {
-            document.getElementById('successLayer').classList.remove('active');
-            clearInput();
+        function showSuccess() {
+            document.getElementById('modalTitle').innerText = "성공!";
+            document.getElementById('modalTitle').style.color = "var(--success)";
+            document.getElementById('modalDesc').innerText = "신호 해독에 성공했습니다!\n데이터가 전송되었습니다.";
+            document.getElementById('modalBtn').innerText = "다시 도전하기";
+            document.getElementById('modalBtn').onclick = () => { layer.classList.remove('active'); clearInput(); };
+            layer.classList.add('active');
         }
     </script>
 </body>
