@@ -217,6 +217,11 @@
         }
         .cert-name-input::placeholder { color: #ccc; }
 
+        .cert-date { 
+            font-size: 1rem; color: #888; font-family: 'Orbitron'; 
+            margin-top: -5px; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px;
+        }
+
         .cert-mascot-main {
             width: 100%; flex: 1; min-height: 150px;
             display: flex; align-items: center; justify-content: center;
@@ -328,6 +333,7 @@
                     placeholder="이름 입력"
                     maxlength="15"
                     autocomplete="off">
+                <div id="cert-date" class="cert-date">2026.04.13</div>
             </div>
 
             <div class="cert-mascot-main">
@@ -512,6 +518,12 @@
             const progressFill = document.getElementById('progress-fill');
             const scanText = document.getElementById('scan-text');
             const scanPortal = document.getElementById('scan-portal');
+
+            // 날짜 업데이트
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+            const dateEl = document.getElementById('cert-date');
+            if (dateEl) dateEl.innerText = dateStr;
 
             // 시네마틱 연출 시작 (80% 단축)
             scanLayer.classList.add('active');
