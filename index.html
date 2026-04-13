@@ -196,53 +196,68 @@
             background: #fff;
             width: 100%;
             max-width: 360px;
-            padding: 40px 20px;
-            border-radius: 30px;
+            padding: 50px 0 60px 0;
+            border-radius: 50px;
             position: relative;
             box-shadow: 0 40px 100px rgba(0,0,0,0.6);
             color: #1a1a1a;
             text-align: center;
             margin-bottom: 35px;
-            border: 12px solid #d4af37;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
-                url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            border: 15px solid #d4af37;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .cert-logo { height: 35px; margin-bottom: 15px; filter: grayscale(1); opacity: 0.8; }
-        .cert-label { font-family: 'Orbitron'; font-size: 0.75rem; letter-spacing: 5px; color: #d4af37; font-weight: 900; margin-bottom: 8px; }
-        .cert-title { font-size: 1.8rem; font-weight: 900; margin: 0; color: #1a1a1a; letter-spacing: -0.5px; white-space: nowrap; }
-        .text-gold {
-            background: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .cert-content { width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+        .cert-logo { height: 45px; margin-bottom: 30px; object-fit: contain; }
+        
+        .cert-label { 
+            font-family: 'Orbitron'; font-size: 1.1rem; letter-spacing: 6px; 
+            color: #d4af37; font-weight: 900; margin-bottom: 12px; 
         }
-        .cert-divider { width: 50px; height: 3px; background: #d4af37; margin: 25px auto; border-radius: 2px; }
+
+        /* Boxed Title */
+        .cert-title-box {
+            background: #a67c00;
+            width: 100%;
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+        .cert-title { 
+            font-size: 1.3rem; font-weight: 900; margin: 0; color: #fff; 
+            letter-spacing: 12px; text-indent: 12px; /* Center with spacing */
+        }
+        
+        .cert-divider { width: 50px; height: 4px; background: #d4af37; margin-bottom: 30px; border-radius: 2px; }
         
         .cert-name-input {
             width: 90%;
             border: none;
-            border-bottom: 2px dashed #ccc;
-            font-size: 1.8rem;
+            font-size: 2.8rem;
             text-align: center;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             font-family: 'Noto Sans KR';
             font-weight: 900;
             background: transparent;
             outline: none;
-            color: #333;
+            color: #222;
+            letter-spacing: -1px;
         }
-        .cert-name-input:focus { border-bottom-color: #d4af37; border-bottom-style: solid; }
-        .cert-name-input::placeholder { color: #f0f0f0; }
+        .cert-name-input::placeholder { color: #f5f5f5; }
 
-        .cert-date { font-size: 0.95rem; color: #999; font-family: 'Orbitron'; margin-bottom: 20px; font-weight: 700; }
+        .cert-date { 
+            font-size: 1.3rem; color: #888; font-family: 'Orbitron'; 
+            margin-bottom: 25px; font-weight: 800; letter-spacing: 2px;
+        }
         
         /* Mascot Selection Styles */
-        .mascot-display-area { position: relative; margin-bottom: 25px; }
+        .mascot-display-area { position: relative; width: 100%; }
         #mascot-preview { 
-            width: 150px; height: 150px; margin: 0 auto;
-            object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+            width: 180px; height: 180px; margin: 0 auto;
+            object-fit: contain;
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
@@ -266,7 +281,10 @@
         }
         .btn-change-mascot:hover { background: #f0f0f0; color: #333; }
 
-        .cert-footer-text { font-size: 1.05rem; line-height: 1.7; color: #555; font-weight: 700; margin-top: 15px; }
+        .cert-footer-text { 
+            font-size: 1.2rem; line-height: 1.8; color: #444; font-weight: 700; 
+            margin-top: 40px; word-break: keep-all; 
+        }
         
         .cert-actions { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
         .btn-gold { 
@@ -337,15 +355,20 @@
             <div class="cert-content">
                 <img src="logo.png" class="cert-logo" alt="logo">
                 <div class="cert-label">COSMIC SIGNAL CENTER</div>
-                <h2 class="cert-title text-gold">우주 신호 해독 인증서</h2>
+                <div class="cert-title-box">
+                    <h2 class="cert-title">우주 신호 해독 인증서</h2>
+                </div>
+                
                 <div class="cert-divider"></div>
 
                 <input type="text"
                        id="cert-name-input"
                        class="cert-name-input"
-                       placeholder="이름을 입력하세요"
+                       placeholder="이름 입력"
                        maxlength="20"
                        autocomplete="off">
+
+                <div style="border-bottom: 2.5px dashed #ccc; width: 80%; margin-bottom: 20px;"></div>
 
                 <div class="cert-date" id="cert-date">2026.04.13</div>
 
