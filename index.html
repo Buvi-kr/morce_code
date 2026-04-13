@@ -165,20 +165,17 @@
             transition: width 0.6s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
 
-        /* Certificate Screen Styles - Improved Responsiveness */
+        /* Certificate Screen - REBUILT FROM SCRATCH */
         #screen-certificate {
             display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #001f3f 0%, #000 100%);
+            z-index: 1000;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            min-height: 100vh;
-            background: radial-gradient(circle at center, #001f3f 0%, #000 100%);
-            z-index: 1000;
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            box-sizing: border-box;
         }
         #screen-certificate.active { display: flex; }
 
@@ -187,96 +184,61 @@
             width: 100%;
             max-width: 380px;
             height: auto;
-            max-height: 85vh; /* 화면의 85%를 넘지 않도록 */
-            padding: 5% 0;
-            border-radius: 40px;
-            position: relative;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-            color: #1a1a1a;
-            border: 12px solid #d4af37;
+            max-height: 85vh;
+            border: 15px solid #d4af37;
+            border-radius: 50px;
+            padding: 30px 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-evenly; /* 요소들이 균등하게 분산 */
-            overflow: hidden;
-        }
-
-        .cert-content { 
-            width: 100%; height: 100%; 
-            display: flex; flex-direction: column; align-items: center; 
             justify-content: space-between;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            box-sizing: border-box;
+            position: relative;
         }
 
-        .cert-logo { height: 35px; min-height: 25px; object-fit: contain; }
-        
-        .cert-label { 
-            font-family: 'Orbitron'; font-size: 0.95rem; letter-spacing: 4px; 
-            color: #d4af37; font-weight: 900;
+        .cert-logo { height: 40px; margin-bottom: 5px; object-fit: contain; }
+        .cert-title-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .cert-title-boxed {
+            background: #a67c00; width: 105%; padding: 12px 0;
+            margin: 10px 0; transform: scaleX(1);
+        }
+        .cert-title-text { 
+            color: #fff; font-size: 1.2rem; font-weight: 900; margin: 0; 
+            letter-spacing: 5px; text-indent: 5px; text-align: center;
         }
 
-        .cert-title-box {
-            background: #a67c00;
-            width: 100%;
-            padding: 10px 0;
-        }
-        .cert-title { 
-            font-size: 1.15rem; font-weight: 900; margin: 0; color: #fff; 
-            letter-spacing: 8px; text-indent: 8px;
-        }
-        
-        .cert-divider { width: 40px; height: 3px; background: #d4af37; border-radius: 2px; }
-        
+        .cert-name-section { width: 85%; margin: 5px 0; }
         .cert-name-input {
-            width: 90%;
-            border: none;
-            font-size: 2.2rem;
-            text-align: center;
-            padding: 5px;
-            font-family: 'Noto Sans KR';
-            font-weight: 900;
-            background: transparent;
-            outline: none;
-            color: #222;
+            width: 100%; border: none; border-bottom: 2px solid #ddd;
+            font-size: 1.8rem; text-align: center; padding: 10px;
+            font-family: 'Noto Sans KR'; font-weight: 900; color: #666;
+            background: transparent; outline: none;
         }
+        .cert-name-input::placeholder { color: #ccc; }
 
-        .cert-date { 
-            font-size: 1.1rem; color: #888; font-family: 'Orbitron'; 
-            font-weight: 800; letter-spacing: 1px;
+        .cert-mascot-main {
+            width: 100%; flex: 1; min-height: 150px;
+            display: flex; align-items: center; justify-content: center;
         }
-        
-        .mascot-display-area { 
-            position: relative; width: 100%; 
-            display: flex; flex-direction: column; align-items: center;
-        }
-        #mascot-preview { 
-            width: 150px; height: 150px; 
-            object-fit: contain;
-            transition: 0.3s;
-        }
-        
-        /* 마스코트가 가려지지 않도록 썸네일 영역 조정 */
-        .mascot-selector { 
-            display: flex; justify-content: center; gap: 10px; margin-top: 5px;
-            z-index: 100;
-        }
+        #mascot-preview { width: 160px; height: 160px; object-fit: contain; transition: 0.3s; }
+
+        .mascot-selector { display: flex; gap: 12px; margin: 10px 0; }
         .mascot-thumb {
-            width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0;
-            cursor: pointer; border: 2.5px solid #fff; overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 50px; height: 50px; border-radius: 50%; background: #f8f8f8;
+            border: 3px solid #fff; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden; transition: 0.2s;
+        }
+        .mascot-thumb.active { border-color: #d4af37; transform: scale(1.1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .mascot-thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+        .cert-praise { 
+            font-size: 1.1rem; color: #444; font-weight: 900; 
+            text-align: center; margin-bottom: 15px; letter-spacing: -0.5px;
         }
 
-        .cert-footer-text { 
-            font-size: 1.05rem; line-height: 1.6; color: #444; font-weight: 700; 
-            padding: 0 15px; word-break: keep-all; 
-        }
-        
         .cert-actions { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
 
-        /* 세로가 짧은 모바일 대응 */
-        @media (max-height: 600px) {
-            .cert-card { border-width: 8px; border-radius: 25px; }
-            #mascot-preview { width: 100px; height: 100px; }
-            .cert-name-input { font-size: 1.8rem; }
             .cert-title { font-size: 1rem; letter-spacing: 5px; }
             .cert-logo { height: 25px; }
             .cert-footer-text { font-size: 0.9rem; }
@@ -346,60 +308,51 @@
 
     <!-- Certificate Card Screen -->
     <div id="screen-certificate">
-        <div class="cert-card-wrap">
-            <div class="cert-card" id="cert-card">
-                <div class="cert-content">
-                    <img src="logo.png" class="cert-logo" alt="logo">
-                    <div class="cert-label">COSMIC SIGNAL CENTER</div>
-                    <div class="cert-title-box">
-                        <h2 class="cert-title">우주 신호 해독 인증서</h2>
-                    </div>
-                    
-                    <div class="cert-divider"></div>
-
-                    <input type="text"
-                        id="cert-name-input"
-                        class="cert-name-input"
-                        placeholder="이름 입력"
-                        maxlength="20"
-                        autocomplete="off">
-
-                    <div style="border-bottom: 2px dashed #ccc; width: 80%; margin-bottom: 20px;"></div>
-
-                    <div class="cert-date" id="cert-date">2026.04.13</div>
-
-                    <div class="mascot-display-area">
-                        <img src="assets/images/dogi.png" id="mascot-preview" alt="선택된 마스코트">
-                        
-                        <div class="mascot-selector" id="mascot-selector">
-                            <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
-                                <img src="assets/images/dogi.png" alt="도기">
-                            </div>
-                            <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
-                                <img src="assets/images/raebi.png" alt="래비">
-                            </div>
-                            <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
-                                <img src="assets/images/caeti.png" alt="캐티">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="cert-footer-text">
-                        먼 우주에서 온 신호를 완벽히 해독한<br>
-                        최고의 우주 분석가입니다! ✨
-                    </div>
+        <div class="cert-card" id="cert-card">
+            <img src="logo.png" class="cert-logo" alt="logo">
+            
+            <div class="cert-title-area">
+                <div class="cert-title-boxed">
+                    <h2 class="cert-title-text">우주 신호 해독 완료 인증서</h2>
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="cert-actions" id="cert-actions">
-                <button class="btn btn-gold btn-block" onclick="saveCertificate()">
-                    📸 이미지로 저장
-                </button>
-                <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
-                    ← 돌아가기
-                </button>
+            <div class="cert-name-section">
+                <input type="text"
+                    id="cert-name-input"
+                    class="cert-name-input"
+                    placeholder="이름 입력"
+                    maxlength="15"
+                    autocomplete="off">
             </div>
+
+            <div class="cert-mascot-main">
+                <img src="assets/images/dogi.png" id="mascot-preview" alt="선택 마스코트">
+            </div>
+
+            <div class="mascot-selector" id="mascot-selector">
+                <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
+                    <img src="assets/images/dogi.png" alt="도기">
+                </div>
+                <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
+                    <img src="assets/images/raebi.png" alt="래비">
+                </div>
+                <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
+                    <img src="assets/images/caeti.png" alt="캐티">
+                </div>
+            </div>
+
+            <div class="cert-praise">최고의 암호 분석가입니다! ✨</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="cert-actions" id="cert-actions">
+            <button class="btn btn-gold btn-block" onclick="saveCertificate()">
+                📸 이미지로 저장
+            </button>
+            <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
+                ← 돌아가기
+            </button>
         </div>
     </div>
 
