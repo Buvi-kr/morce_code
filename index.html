@@ -346,58 +346,60 @@
 
     <!-- Certificate Card Screen -->
     <div id="screen-certificate">
-        <div class="cert-card" id="cert-card">
-            <div class="cert-content">
-                <img src="logo.png" class="cert-logo" alt="logo">
-                <div class="cert-label">COSMIC SIGNAL CENTER</div>
-                <div class="cert-title-box">
-                    <h2 class="cert-title">우주 신호 해독 인증서</h2>
-                </div>
-                
-                <div class="cert-divider"></div>
-
-                <input type="text"
-                       id="cert-name-input"
-                       class="cert-name-input"
-                       placeholder="이름 입력"
-                       maxlength="20"
-                       autocomplete="off">
-
-                <div style="border-bottom: 2px dashed #ccc; width: 80%;"></div>
-
-                <div class="cert-date" id="cert-date">2026.04.13</div>
-
-                <div class="mascot-display-area">
-                    <img src="assets/images/dogi.png" id="mascot-preview" alt="선택된 마스코트">
+        <div class="cert-card-wrap">
+            <div class="cert-card" id="cert-card">
+                <div class="cert-content">
+                    <img src="logo.png" class="cert-logo" alt="logo">
+                    <div class="cert-label">COSMIC SIGNAL CENTER</div>
+                    <div class="cert-title-box">
+                        <h2 class="cert-title">우주 신호 해독 인증서</h2>
+                    </div>
                     
-                    <div class="mascot-selector" id="mascot-selector">
-                        <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
-                            <img src="assets/images/dogi.png" alt="도기">
-                        </div>
-                        <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
-                            <img src="assets/images/raebi.png" alt="래비">
-                        </div>
-                        <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
-                            <img src="assets/images/caeti.png" alt="캐티">
+                    <div class="cert-divider"></div>
+
+                    <input type="text"
+                        id="cert-name-input"
+                        class="cert-name-input"
+                        placeholder="이름 입력"
+                        maxlength="20"
+                        autocomplete="off">
+
+                    <div style="border-bottom: 2px dashed #ccc; width: 80%; margin-bottom: 20px;"></div>
+
+                    <div class="cert-date" id="cert-date">2026.04.13</div>
+
+                    <div class="mascot-display-area">
+                        <img src="assets/images/dogi.png" id="mascot-preview" alt="선택된 마스코트">
+                        
+                        <div class="mascot-selector" id="mascot-selector">
+                            <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
+                                <img src="assets/images/dogi.png" alt="도기">
+                            </div>
+                            <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
+                                <img src="assets/images/raebi.png" alt="래비">
+                            </div>
+                            <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
+                                <img src="assets/images/caeti.png" alt="캐티">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="cert-footer-text">
-                    먼 우주에서 온 신호를 완벽히 해독한<br>
-                    최고의 우주 분석가입니다! ✨
+                    <div class="cert-footer-text">
+                        먼 우주에서 온 신호를 완벽히 해독한<br>
+                        최고의 우주 분석가입니다! ✨
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="cert-actions">
-            <button class="btn btn-gold btn-block" onclick="saveCertificate()">
-                📸 이미지로 저장
-            </button>
-            <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
-                ← 돌아가기
-            </button>
+            <!-- Actions -->
+            <div class="cert-actions" id="cert-actions">
+                <button class="btn btn-gold btn-block" onclick="saveCertificate()">
+                    📸 이미지로 저장
+                </button>
+                <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
+                    ← 돌아가기
+                </button>
+            </div>
         </div>
     </div>
 
@@ -599,11 +601,13 @@
             const card = document.getElementById('cert-card');
             const nameInput = document.getElementById('cert-name-input');
             const mascotSelector = document.getElementById('mascot-selector');
+            const certActions = document.getElementById('cert-actions');
             
             // 입력창 placeholder 숨기기 및 포커스 해제
             nameInput.blur();
-            // 선택 UI 숨기기
-            mascotSelector.style.opacity = "0";
+            // 선택 UI 및 버튼 숨기기
+            mascotSelector.style.display = "none";
+            certActions.style.display = "none";
             
             try {
                 const canvas = await html2canvas(card, {
@@ -614,15 +618,16 @@
                 });
                 
                 const link = document.createElement('a');
-                link.download = `artvalley_certificate_${nameInput.value || 'explorer'}.png`;
+                link.download = `cosmic_certificate_${nameInput.value || 'explorer'}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
                 console.error('인증서 저장 실패:', err);
                 alert('인증서 저장 중 오류가 발생했습니다.');
             } finally {
-                // 선택 UI 복구
-                mascotSelector.style.opacity = "1";
+                // UI 복구
+                mascotSelector.style.display = "flex";
+                certActions.style.display = "flex";
             }
         }
 
