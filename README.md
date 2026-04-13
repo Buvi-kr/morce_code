@@ -1,7 +1,5 @@
 # 🛰️ Art Valley: 우주 신호 해독 센터 (Morse Code Decoder)
 
-![Art Valley Header](https://capsule-render.vercel.app/render?type=waving&color=auto&height=200&section=header&text=Morse%20Decoder&fontSize=90&animation=fadeIn&fontAlignY=38)
-
 아트밸리 천문과학관을 위한 인터랙티브 우주 신호 해독 시스템입니다. 우주에서 온 수수께끼의 모스 부호를 해독하고, 우주 분석가 인증서를 획득하세요!
 
 ## ✨ 주요 기능 (Key Features)
