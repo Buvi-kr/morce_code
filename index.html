@@ -276,7 +276,7 @@
     <div id="screen-main">
         <header>
             <div class="header-left">
-                <img src="logo.png" alt="천문과학관" class="logo">
+                <img src="logo.webp" alt="천문과학관" class="logo">
                 <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
             </div>
             <button class="sound-btn" id="soundBtn" onclick="toggleMute(event)">🔇 OFF</button>
@@ -313,7 +313,7 @@
     <!-- Certificate Card Screen -->
     <div id="screen-certificate">
         <div class="cert-card" id="cert-card">
-            <img src="logo.png" class="cert-logo" alt="logo">
+            <img src="logo.webp" class="cert-logo" alt="logo">
             
             <div class="cert-title-area">
                 <div class="cert-title-boxed">
@@ -331,18 +331,18 @@
             </div>
 
             <div class="cert-mascot-main">
-                <img src="assets/images/dogi.png" id="mascot-preview" alt="선택 마스코트">
+                <img src="assets/images/dogi.webp" id="mascot-preview" alt="선택 마스코트">
             </div>
 
             <div class="mascot-selector" id="mascot-selector">
                 <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
-                    <img src="assets/images/dogi.png" alt="도기">
+                    <img src="assets/images/dogi.webp" alt="도기">
                 </div>
                 <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
-                    <img src="assets/images/raebi.png" alt="래비">
+                    <img src="assets/images/raebi.webp" alt="래비">
                 </div>
                 <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
-                    <img src="assets/images/caeti.png" alt="캐티">
+                    <img src="assets/images/caeti.webp" alt="캐티">
                 </div>
             </div>
 
@@ -588,7 +588,7 @@
         }
 
         function selectMascot(name, el) {
-            document.getElementById('mascot-preview').src = `assets/images/${name}.png`;
+            document.getElementById('mascot-preview').src = `assets/images/${name}.webp`;
             document.querySelectorAll('.mascot-thumb').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
             
