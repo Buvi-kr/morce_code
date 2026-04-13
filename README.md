@@ -1,14 +1,14 @@
-# 🛰️ Art Valley: 우주 신호 해독 센터 (Morse Code Treasure Hunt)
+# 🛰️ Art Valley: 우주 신호 해독 센터 (Morse Code Decoder)
 
-![Art Valley Header](https://capsule-render.vercel.app/render?type=waving&color=auto&height=200&section=header&text=Art%20Valley&fontSize=90&animation=fadeIn&fontAlignY=38)
+![Art Valley Header](https://capsule-render.vercel.app/render?type=waving&color=auto&height=200&section=header&text=Morse%20Decoder&fontSize=90&animation=fadeIn&fontAlignY=38)
 
-아트밸리 천문과학관을 위한 인터랙티브 보물찾기 시스템입니다. 우주에서 온 수수께끼의 모스 부호를 해독하고, 탐험가 인증서를 획득하세요!
+아트밸리 천문과학관을 위한 인터랙티브 우주 신호 해독 시스템입니다. 우주에서 온 수수께끼의 모스 부호를 해독하고, 우주 분석가 인증서를 획득하세요!
 
 ## ✨ 주요 기능 (Key Features)
 
-- **🌌 몰입형 UI/UX**: 우주 공간을 배경으로 한 고퀄리티 비디오 배경과 사이버네틱한 디자인 시스템.
-- **📟 실시간 모스 부호 해독**: 직관적인 모스 부호 그리드와 슬롯 기반의 입력 인터페이스.
-- **🏆 탐험가 인증서 생성**: 성공 시 본인의 이름을 입력하고 귀여운 마스코트들과 함께하는 인증서를 생성할 수 있습니다.
+- **🌌 시네마틱 연출**: 해독 성공 시 신호 스캐닝 및 데이터 분석 과정을 보여주는 몰입감 넘치는 트랜지션 효과.
+- **🏆 우주 분석가 인증서**: 해독 성공 시 본인의 이름을 입력하고 우주 테마의 공식 인증서를 생성 및 저장 가능.
+- **📟 실시간 모스 부호 해독**: 직관적인 모동 가이드와 슬롯 기반의 입력 인터페이스.
 - **📸 이미지 저장 기능**: `html2canvas`를 활용하여 생성된 인증서를 고해상도 PNG 이미지로 즉시 저장.
 - **🎵 오디오 피드백**: 시스템 가동 및 성공 시 배경음악과 효과음 지원 (브라우저 정책에 최적화).
 

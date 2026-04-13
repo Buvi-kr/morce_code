@@ -121,6 +121,42 @@
         #layer.active { display: flex; }
         .modal-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); width: 85%; max-width: 320px; }
 
+        /* Scanning Layer */
+        #scan-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        #scan-layer.active { display: flex; }
+        
+        .scan-line {
+            width: 100%; height: 4px; background: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            position: absolute; top: -10%; left: 0;
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+
+        .decode-text {
+            font-family: 'Orbitron'; font-size: 1.5rem; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 5px; margin-top: 20px;
+            animation: blink 0.5s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .progress-bar {
+            width: 200px; height: 10px; border: 1px solid var(--primary);
+            margin-top: 20px; position: relative; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--primary); width: 0%;
+            transition: width 2.5s ease-in-out;
+        }
+
         /* Certificate Screen Styles */
         #screen-certificate {
             display: none;
@@ -129,7 +165,7 @@
             justify-content: flex-start;
             padding: 40px 20px;
             min-height: 100vh;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            background: radial-gradient(circle at center, #001f3f 0%, #000 100%);
             z-index: 1000;
             position: fixed;
             top: 0; left: 0; width: 100%;
@@ -262,13 +298,21 @@
         </main>
     </div>
 
+    <!-- Scanning Transition -->
+    <div id="scan-layer">
+        <div class="scan-line"></div>
+        <div id="scan-portal" style="font-size: 8rem; filter: drop-shadow(0 0 30px var(--primary-glow));">🛰️</div>
+        <div class="decode-text" id="scan-text">SIGNAL SCANNING...</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
     <!-- Certificate Card Screen -->
     <div id="screen-certificate">
         <div class="cert-card" id="cert-card">
             <div class="cert-content">
-                <div class="cert-badge">🏆</div>
-                <div class="cert-label">ART VALLEY</div>
-                <h2 class="cert-title text-gold">보물찾기 인증서</h2>
+                <div class="cert-badge">🌌</div>
+                <div class="cert-label">COSMIC SIGNAL CENTER</div>
+                <h2 class="cert-title text-gold">우주 신호 해독 인증서</h2>
                 <div class="cert-divider"></div>
 
                 <input type="text"
@@ -281,11 +325,11 @@
                 <div class="cert-date" id="cert-date">2026.04.13</div>
 
                 <div class="cert-items">
-                    <span>🔑</span>
-                    <span>🎒</span>
-                    <span>🗺️</span>
-                    <span>🔦</span>
-                    <span>💎</span>
+                    <span>🛰️</span>
+                    <span>🔭</span>
+                    <span>🛸</span>
+                    <span>☄️</span>
+                    <span>🌌</span>
                 </div>
 
                 <div class="cert-mascots">
@@ -295,8 +339,8 @@
                 </div>
 
                 <div class="cert-footer-text">
-                    아트밸리의 보물을 모두 찾은<br>
-                    진정한 탐험가입니다! 🌟
+                    먼 우주에서 온 신호를 완벽히 해독한<br>
+                    최고의 우주 분석가입니다! ✨
                 </div>
             </div>
         </div>
@@ -419,12 +463,42 @@
         }
 
         function showSuccess() {
+            const scanLayer = document.getElementById('scan-layer');
+            const progressFill = document.getElementById('progress-fill');
+            const scanText = document.getElementById('scan-text');
+            const scanPortal = document.getElementById('scan-portal');
+
             // 날짜 업데이트
             const now = new Date();
             const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
             document.getElementById('cert-date').innerText = dateStr;
-            
-            showScreen('screen-certificate');
+
+            // 시네마틱 연출 시작
+            scanLayer.classList.add('active');
+            setTimeout(() => { progressFill.style.width = "100%"; }, 100);
+
+            setTimeout(() => {
+                scanText.innerText = "DECODING COMPLETE!";
+                scanText.style.color = "var(--success)";
+                scanPortal.innerText = "⭐";
+                scanPortal.style.transform = "scale(1.5)";
+                scanPortal.style.transition = "1s";
+            }, 2000);
+
+            setTimeout(() => {
+                scanLayer.style.opacity = "0";
+                scanLayer.style.transition = "0.5s";
+                setTimeout(() => {
+                    scanLayer.classList.remove('active');
+                    scanLayer.style.opacity = "1";
+                    progressFill.style.width = "0%";
+                    scanText.innerText = "SIGNAL SCANNING...";
+                    scanText.style.color = "var(--primary)";
+                    scanPortal.innerText = "🛰️";
+                    scanPortal.style.transform = "scale(1)";
+                    showScreen('screen-certificate');
+                }, 500);
+            }, 3000);
         }
 
         function showScreen(screenId) {
