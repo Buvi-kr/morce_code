@@ -121,6 +121,25 @@
         #layer.active { display: flex; }
         .modal-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); width: 85%; max-width: 320px; }
 
+        /* Failure Layer */
+        #fail-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,0,85,0.2); z-index: 6000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: glitch 0.3s infinite;
+        }
+        #fail-layer.active { display: flex; }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+        .fail-text { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff0055; font-weight: 900; }
+
         /* Scanning Layer */
         #scan-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -134,7 +153,7 @@
             width: 100%; height: 4px; background: var(--primary);
             box-shadow: 0 0 20px var(--primary-glow);
             position: absolute; top: -10%; left: 0;
-            animation: scan 2s linear infinite;
+            animation: scan 1.5s linear infinite;
         }
         @keyframes scan {
             0% { top: -10%; }
@@ -154,7 +173,7 @@
         }
         .progress-fill {
             height: 100%; background: var(--primary); width: 0%;
-            transition: width 2.5s ease-in-out;
+            transition: width 0.6s ease-in-out;
         }
 
         /* Certificate Screen Styles */
@@ -177,7 +196,7 @@
             background: #fff;
             width: 100%;
             max-width: 360px;
-            padding: 40px 30px;
+            padding: 40px 20px;
             border-radius: 30px;
             position: relative;
             box-shadow: 0 40px 100px rgba(0,0,0,0.6);
@@ -190,19 +209,9 @@
                 url('https://www.transparenttextures.com/patterns/paper-fibers.png');
         }
 
-        /* Gold Foil Effect */
-        .cert-card::before {
-            content: '';
-            position: absolute;
-            top: -6px; left: -6px; right: -6px; bottom: -6px;
-            border: 2px solid #f1c40f;
-            border-radius: 24px;
-            pointer-events: none;
-        }
-
-        .cert-badge { font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15)); }
-        .cert-label { font-family: 'Orbitron'; font-size: 0.85rem; letter-spacing: 5px; color: #d4af37; font-weight: 900; margin-bottom: 8px; }
-        .cert-title { font-size: 2.4rem; font-weight: 900; margin: 0; color: #1a1a1a; letter-spacing: -1px; }
+        .cert-logo { height: 35px; margin-bottom: 15px; filter: grayscale(1); opacity: 0.8; }
+        .cert-label { font-family: 'Orbitron'; font-size: 0.75rem; letter-spacing: 5px; color: #d4af37; font-weight: 900; margin-bottom: 8px; }
+        .cert-title { font-size: 1.8rem; font-weight: 900; margin: 0; color: #1a1a1a; letter-spacing: -0.5px; white-space: nowrap; }
         .text-gold {
             background: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%);
             -webkit-background-clip: text;
@@ -310,7 +319,7 @@
     <div id="screen-certificate">
         <div class="cert-card" id="cert-card">
             <div class="cert-content">
-                <div class="cert-badge">🌌</div>
+                <img src="logo.png" class="cert-logo" alt="logo">
                 <div class="cert-label">COSMIC SIGNAL CENTER</div>
                 <h2 class="cert-title text-gold">우주 신호 해독 인증서</h2>
                 <div class="cert-divider"></div>
@@ -356,13 +365,9 @@
         </div>
     </div>
 
-    <div id="layer">
-        <div class="modal-box" id="modalBox">
-            <div id="modalIcon" style="font-size: 5rem;">🛸</div>
-            <h2 id="modalTitle" style="font-family: 'Orbitron'; font-size: 2.2rem; color: var(--success); margin: 15px 0;">반갑습니다!</h2>
-            <p id="modalDesc" style="color: #eee; margin-bottom: 25px;">우주 신호 해독을 시작하려면<br>아래 버튼을 눌러주세요.</p>
-            <button class="btn btn-submit" style="width: 100%;" id="modalBtn" onclick="startSystem()">관측 시작하기</button>
-        </div>
+    <div id="fail-layer">
+        <div class="fail-text">ACCESS DENIED</div>
+        <div style="color: #fff; margin-top: 10px;">SIGNAL INTERFERENCE DETECTED</div>
     </div>
 
     <script>
@@ -378,11 +383,20 @@
         const bgVideo = document.getElementById('bgVideo');
         const soundBtn = document.getElementById('soundBtn');
         const layer = document.getElementById('layer');
+        const failLayer = document.getElementById('fail-layer');
         let audioEnabled = false;
+
+        const LETTER_COLORS = {
+            'A': '#FF3D00', 'B': '#3D5AFE', 'C': '#00E676', 'D': '#FFEA00', 'E': '#FF1744',
+            'F': '#D500F9', 'G': '#00B0FF', 'H': '#1DE9B6', 'I': '#C6FF00', 'J': '#FF9100',
+            'K': '#FF3D00', 'L': '#3D5AFE', 'M': '#00E676', 'N': '#FFEA00', 'O': '#FF1744',
+            'P': '#D500F9', 'Q': '#00B0FF', 'R': '#1DE9B6', 'S': '#C6FF00', 'T': '#FF9100',
+            'U': '#FF3D00', 'V': '#3D5AFE', 'W': '#00E676', 'X': '#FFEA00', 'Y': '#FF1744', 'Z': '#D500F9'
+        };
 
         // 초기 시작 모달 표시
         window.addEventListener('load', () => {
-            layer.classList.add('active');
+            // layer.classList.add('active'); // 모달 대신 직접 시작 가능하도록 주석 처리 혹은 유지
         });
 
         function startSystem() {
@@ -421,6 +435,7 @@
         Object.keys(MORSE).forEach(key => {
             const btn = document.createElement('div');
             btn.className = 'morse-btn';
+            btn.id = `btn-${key}`;
             let codeHtml = '<div class="m-code">';
             for (let char of MORSE[key]) {
                 codeHtml += (char === '.') ? '<div class="dot"></div>' : '<div class="dash"></div>';
@@ -434,19 +449,43 @@
         function inputLetter(key) {
             if (userInput.length >= 4) return;
             userInput.push(key);
+            
+            // 버튼 강조
+            const btn = document.getElementById(`btn-${key}`);
+            btn.style.borderColor = LETTER_COLORS[key];
+            btn.style.background = `${LETTER_COLORS[key]}22`;
+            btn.querySelector('.m-char').style.color = LETTER_COLORS[key];
+            
             updateDisplay();
         }
 
         function clearInput() {
             userInput = [];
+            // 모든 버튼 초기화
+            document.querySelectorAll('.morse-btn').forEach(btn => {
+                btn.style.borderColor = "";
+                btn.style.background = "";
+                btn.querySelector('.m-char').style.color = "";
+            });
             updateDisplay();
         }
 
         function updateDisplay() {
             slots.forEach((slot, idx) => {
-                slot.innerText = userInput[idx] || "";
+                const char = userInput[idx];
+                slot.innerText = char || "";
                 slot.classList.toggle('active', idx === userInput.length);
                 slot.classList.toggle('filled', idx < userInput.length);
+                
+                if (char) {
+                    slot.style.color = LETTER_COLORS[char];
+                    slot.style.borderColor = LETTER_COLORS[char];
+                    slot.style.boxShadow = `0 0 15px ${LETTER_COLORS[char]}88`;
+                } else {
+                    slot.style.color = "";
+                    slot.style.borderColor = "";
+                    slot.style.boxShadow = "";
+                }
             });
         }
 
@@ -455,10 +494,12 @@
             if (userInput.join('') === TARGET) {
                 showSuccess();
             } else {
-                const machine = document.getElementById('machine');
-                machine.style.borderColor = "var(--danger)";
-                if (navigator.vibrate) navigator.vibrate(200);
-                setTimeout(() => { machine.style.borderColor = "var(--glass-border)"; clearInput(); }, 800);
+                failLayer.classList.add('active');
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                setTimeout(() => { 
+                    failLayer.classList.remove('active');
+                    clearInput(); 
+                }, 800);
             }
         }
 
@@ -473,21 +514,19 @@
             const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
             document.getElementById('cert-date').innerText = dateStr;
 
-            // 시네마틱 연출 시작
+            // 시네마틱 연출 시작 (80% 단축)
             scanLayer.classList.add('active');
-            setTimeout(() => { progressFill.style.width = "100%"; }, 100);
+            setTimeout(() => { progressFill.style.width = "100%"; }, 50);
 
             setTimeout(() => {
                 scanText.innerText = "DECODING COMPLETE!";
                 scanText.style.color = "var(--success)";
                 scanPortal.innerText = "⭐";
                 scanPortal.style.transform = "scale(1.5)";
-                scanPortal.style.transition = "1s";
-            }, 2000);
+            }, 600);
 
             setTimeout(() => {
                 scanLayer.style.opacity = "0";
-                scanLayer.style.transition = "0.5s";
                 setTimeout(() => {
                     scanLayer.classList.remove('active');
                     scanLayer.style.opacity = "1";
@@ -495,10 +534,9 @@
                     scanText.innerText = "SIGNAL SCANNING...";
                     scanText.style.color = "var(--primary)";
                     scanPortal.innerText = "🛰️";
-                    scanPortal.style.transform = "scale(1)";
                     showScreen('screen-certificate');
-                }, 500);
-            }, 3000);
+                }, 300);
+            }, 1000);
         }
 
         function showScreen(screenId) {
