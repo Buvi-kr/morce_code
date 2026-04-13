@@ -513,11 +513,6 @@
             const scanText = document.getElementById('scan-text');
             const scanPortal = document.getElementById('scan-portal');
 
-            // 날짜 업데이트
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
-            document.getElementById('cert-date').innerText = dateStr;
-
             // 시네마틱 연출 시작 (80% 단축)
             scanLayer.classList.add('active');
             setTimeout(() => { progressFill.style.width = "100%"; }, 50);
