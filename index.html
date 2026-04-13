@@ -555,18 +555,25 @@
             const mascotSelector = document.getElementById('mascot-selector');
             const certActions = document.getElementById('cert-actions');
             
-            // 입력창 placeholder 숨기기 및 포커스 해제
+            // 입력창 포커스 해제
             nameInput.blur();
-            // 선택 UI 및 버튼 숨기기
-            mascotSelector.style.display = "none";
-            certActions.style.display = "none";
             
+            // 선택 UI 및 버튼 숨기기 (Layout 유지를 위해 opacity 사용)
+            mascotSelector.style.opacity = "0";
+            certActions.style.opacity = "0";
+            
+            // 잠시 대기 (브라우저가 UI 변경을 반영할 시간)
+            await new Promise(resolve => setTimeout(resolve, 300));
+
             try {
                 const canvas = await html2canvas(card, {
-                    scale: 2, // 고해상도
+                    scale: 2, 
                     backgroundColor: "#ffffff",
                     useCORS: true,
-                    logging: false
+                    allowTaint: true,
+                    logging: false,
+                    width: card.offsetWidth,
+                    height: card.offsetHeight
                 });
                 
                 const link = document.createElement('a');
@@ -575,11 +582,11 @@
                 link.click();
             } catch (err) {
                 console.error('인증서 저장 실패:', err);
-                alert('인증서 저장 중 오류가 발생했습니다.');
+                alert('이미지 생성 중 오류가 발생했습니다. 브라우저 설정을 확인하거나 다시 시도해주세요.');
             } finally {
                 // UI 복구
-                mascotSelector.style.display = "flex";
-                certActions.style.display = "flex";
+                mascotSelector.style.opacity = "1";
+                certActions.style.opacity = "1";
             }
         }
 
