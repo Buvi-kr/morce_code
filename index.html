@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>우주 신호 해독 센터</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #00f0ff;
@@ -119,6 +120,112 @@
         }
         #layer.active { display: flex; }
         .modal-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); width: 85%; max-width: 320px; }
+
+        /* Certificate Screen Styles */
+        #screen-certificate {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 20px;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            z-index: 1000;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            overflow-y: auto;
+        }
+        #screen-certificate.active { display: flex; }
+
+        .cert-card {
+            background: #fff;
+            width: 100%;
+            max-width: 360px;
+            padding: 40px 30px;
+            border-radius: 30px;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 35px;
+            border: 12px solid #d4af37;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+                url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+        }
+
+        /* Gold Foil Effect */
+        .cert-card::before {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            pointer-events: none;
+        }
+
+        .cert-badge { font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15)); }
+        .cert-label { font-family: 'Orbitron'; font-size: 0.85rem; letter-spacing: 5px; color: #d4af37; font-weight: 900; margin-bottom: 8px; }
+        .cert-title { font-size: 2.4rem; font-weight: 900; margin: 0; color: #1a1a1a; letter-spacing: -1px; }
+        .text-gold {
+            background: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #a67c00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cert-divider { width: 50px; height: 3px; background: #d4af37; margin: 25px auto; border-radius: 2px; }
+        
+        .cert-name-input {
+            width: 90%;
+            border: none;
+            border-bottom: 2px dashed #ccc;
+            font-size: 1.8rem;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-family: 'Noto Sans KR';
+            font-weight: 900;
+            background: transparent;
+            outline: none;
+            color: #333;
+        }
+        .cert-name-input:focus { border-bottom-color: #d4af37; border-bottom-style: solid; }
+        .cert-name-input::placeholder { color: #eee; -webkit-text-fill-color: #ddd; }
+
+        .cert-date { font-size: 0.95rem; color: #999; font-family: 'Orbitron'; margin-bottom: 30px; font-weight: 700; }
+        
+        .cert-items { display: flex; justify-content: center; gap: 15px; font-size: 2rem; margin-bottom: 35px; background: #f9f9f9; padding: 15px; border-radius: 20px; }
+        
+        .cert-mascots { display: flex; justify-content: center; margin-bottom: 25px; padding-top: 10px; }
+        .mascot-clip { 
+            width: 80px; height: 80px; border-radius: 50%; background: #fff; 
+            border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            overflow: hidden; margin: 0 -12px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .mascot-clip:hover { transform: translateY(-10px) scale(1.15); z-index: 10; }
+        .mascot-clip img { width: 100%; height: 100%; object-fit: contain; }
+
+        .cert-footer-text { font-size: 1.05rem; line-height: 1.7; color: #555; font-weight: 700; }
+        
+        .cert-actions { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
+        .btn-gold { 
+            background: linear-gradient(135deg, #d4af37, #f1c40f); 
+            color: #000 !important; 
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
+            border: none;
+        }
+        .btn-outline { 
+            background: rgba(255,255,255,0.05); 
+            border: 2px solid rgba(255,255,255,0.2); 
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        .btn-block { width: 100%; padding: 20px; border-radius: 18px; font-size: 1.2rem; font-weight: 900; transition: 0.3s; }
+        .btn-block:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* Screen Transitions */
+        #screen-main { transition: opacity 0.5s; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body onclick="enableAudio()">
@@ -126,32 +233,84 @@
         <source src="모스부호_파형.mp4" type="video/mp4">
     </video>
 
-    <header>
-        <div class="header-left">
-            <img src="logo.png" alt="천문과학관" class="logo">
-            <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
-        </div>
-        <button class="sound-btn" id="soundBtn" onclick="toggleMute(event)">🔇 OFF</button>
-    </header>
+    <div id="screen-main">
+        <header>
+            <div class="header-left">
+                <img src="logo.png" alt="천문과학관" class="logo">
+                <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
+            </div>
+            <button class="sound-btn" id="soundBtn" onclick="toggleMute(event)">🔇 OFF</button>
+        </header>
 
-    <div class="workspace-wrap">
-        <div class="decode-machine" id="machine">
-            <div class="code-display">
-                <div class="slot active" id="slot0"></div>
-                <div class="slot" id="slot1"></div>
-                <div class="slot" id="slot2"></div>
-                <div class="slot" id="slot3"></div>
-            </div>
-            <div class="control-panel">
-                <button class="btn btn-clear" onclick="clearInput()">지 우 기</button>
-                <button class="btn btn-submit" onclick="validate()">해 독 하 기</button>
+        <div class="workspace-wrap">
+            <div class="decode-machine" id="machine">
+                <div class="code-display">
+                    <div class="slot active" id="slot0"></div>
+                    <div class="slot" id="slot1"></div>
+                    <div class="slot" id="slot2"></div>
+                    <div class="slot" id="slot3"></div>
+                </div>
+                <div class="control-panel">
+                    <button class="btn btn-clear" onclick="clearInput()">지 우 기</button>
+                    <button class="btn btn-submit" onclick="validate()">해 독 하 기</button>
+                </div>
             </div>
         </div>
+
+        <main>
+            <div class="morse-grid" id="morseGrid"></div>
+        </main>
     </div>
 
-    <main>
-        <div class="morse-grid" id="morseGrid"></div>
-    </main>
+    <!-- Certificate Card Screen -->
+    <div id="screen-certificate">
+        <div class="cert-card" id="cert-card">
+            <div class="cert-content">
+                <div class="cert-badge">🏆</div>
+                <div class="cert-label">ART VALLEY</div>
+                <h2 class="cert-title text-gold">보물찾기 인증서</h2>
+                <div class="cert-divider"></div>
+
+                <input type="text"
+                       id="cert-name-input"
+                       class="cert-name-input"
+                       placeholder="이름을 입력하세요"
+                       maxlength="20"
+                       autocomplete="off">
+
+                <div class="cert-date" id="cert-date">2026.04.13</div>
+
+                <div class="cert-items">
+                    <span>🔑</span>
+                    <span>🎒</span>
+                    <span>🗺️</span>
+                    <span>🔦</span>
+                    <span>💎</span>
+                </div>
+
+                <div class="cert-mascots">
+                    <div class="mascot-clip"><img src="assets/images/dogi.png" alt="도기"></div>
+                    <div class="mascot-clip"><img src="assets/images/raebi.png" alt="래비"></div>
+                    <div class="mascot-clip"><img src="assets/images/caeti.png" alt="캐티"></div>
+                </div>
+
+                <div class="cert-footer-text">
+                    아트밸리의 보물을 모두 찾은<br>
+                    진정한 탐험가입니다! 🌟
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="cert-actions">
+            <button class="btn btn-gold btn-block" onclick="saveCertificate()">
+                📸 이미지로 저장
+            </button>
+            <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
+                ← 돌아가기
+            </button>
+        </div>
+    </div>
 
     <div id="layer">
         <div class="modal-box" id="modalBox">
@@ -260,12 +419,48 @@
         }
 
         function showSuccess() {
-            document.getElementById('modalTitle').innerText = "성공!";
-            document.getElementById('modalTitle').style.color = "var(--success)";
-            document.getElementById('modalDesc').innerText = "신호 해독에 성공했습니다!\n데이터가 전송되었습니다.";
-            document.getElementById('modalBtn').innerText = "다시 도전하기";
-            document.getElementById('modalBtn').onclick = () => { layer.classList.remove('active'); clearInput(); };
-            layer.classList.add('active');
+            // 날짜 업데이트
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+            document.getElementById('cert-date').innerText = dateStr;
+            
+            showScreen('screen-certificate');
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('screen-main').classList.add('hidden');
+            document.getElementById('screen-certificate').classList.remove('active');
+            
+            if (screenId === 'screen-main') {
+                document.getElementById('screen-main').classList.remove('hidden');
+            } else if (screenId === 'screen-certificate') {
+                document.getElementById('screen-certificate').classList.add('active');
+            }
+        }
+
+        async function saveCertificate() {
+            const card = document.getElementById('cert-card');
+            const nameInput = document.getElementById('cert-name-input');
+            
+            // 입력창 placeholder 숨기기 및 포커스 해제
+            nameInput.blur();
+            
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 2, // 고해상도
+                    backgroundColor: null,
+                    useCORS: true,
+                    logging: false
+                });
+                
+                const link = document.createElement('a');
+                link.download = `artvalley_certificate_${nameInput.value || 'explorer'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error('인증서 저장 실패:', err);
+                alert('인증서 저장 중 오류가 발생했습니다.');
+            }
         }
     </script>
 </body>
