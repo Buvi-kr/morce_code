@@ -239,9 +239,13 @@
 
         .cert-actions { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
 
-            .cert-title { font-size: 1rem; letter-spacing: 5px; }
-            .cert-logo { height: 25px; }
-            .cert-footer-text { font-size: 0.9rem; }
+        /* Mobile Height Adjustments */
+        @media (max-height: 700px) {
+            .cert-card { padding: 15px 15px; border-width: 10px; }
+            #mascot-preview { width: 120px; height: 120px; }
+            .cert-name-input { font-size: 1.5rem; }
+            .cert-title-boxed { padding: 8px 0; }
+            .cert-praise { font-size: 1rem; }
         }
 
         .btn-gold { 
