@@ -552,17 +552,15 @@
         async function saveCertificate() {
             const card = document.getElementById('cert-card');
             const nameInput = document.getElementById('cert-name-input');
-            const mascotSelector = document.getElementById('mascot-selector');
             const certActions = document.getElementById('cert-actions');
             
             // 입력창 포커스 해제
             nameInput.blur();
             
-            // 선택 UI 및 버튼 숨기기 (Layout 유지를 위해 opacity 사용)
-            mascotSelector.style.opacity = "0";
+            // 버튼들만 숨기기 (마스코트 선택창은 이제 포함)
             certActions.style.opacity = "0";
             
-            // 잠시 대기 (브라우저가 UI 변경을 반영할 시간)
+            // 잠시 대기
             await new Promise(resolve => setTimeout(resolve, 300));
 
             try {
@@ -582,10 +580,9 @@
                 link.click();
             } catch (err) {
                 console.error('인증서 저장 실패:', err);
-                alert('이미지 생성 중 오류가 발생했습니다. 브라우저 설정을 확인하거나 다시 시도해주세요.');
+                alert('이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
             } finally {
-                // UI 복구
-                mascotSelector.style.opacity = "1";
+                // 버튼 복구
                 certActions.style.opacity = "1";
             }
         }
