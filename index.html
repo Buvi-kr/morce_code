@@ -353,7 +353,7 @@
                 </div>
             </div>
 
-            <div class="cert-praise">최고의 암호 분석가입니다! ✨</div>
+            <div class="cert-praise">해독 완료! 저장 후 로비로 이동하여 체험부스 체험권을 획득하세요!</div>
         </div>
 
         <!-- Actions -->
@@ -520,9 +520,9 @@
             const scanText = document.getElementById('scan-text');
             const scanPortal = document.getElementById('scan-portal');
 
-            // 날짜 업데이트
+            // 날짜 및 시간 업데이트
             const now = new Date();
-            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             const dateEl = document.getElementById('cert-date');
             if (dateEl) dateEl.innerText = dateStr;
 

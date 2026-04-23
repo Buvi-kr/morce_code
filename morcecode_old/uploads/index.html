@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>우주 신호 해독 센터</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --primary-glow: rgba(0, 240, 255, 0.6);
+            --secondary: #bd00ff;
+            --success: #00ffaa;
+            --danger: #ff0055;
+            --glass: rgba(10, 15, 30, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: #000;
+            font-family: 'Noto+Sans+KR', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden; /* 가로 짤림 방지 */
+            overflow-y: auto;   /* Y, Z 확인을 위한 스크롤 허용 */
+        }
+
+        .video-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; object-fit: cover;
+            opacity: 0.35; filter: contrast(1.1) brightness(0.4);
+            pointer-events: none;
+        }
+
+        header { 
+            padding: 10px 15px; z-index: 110;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.85); border-bottom: 2px solid var(--primary);
+            position: sticky; top: 0;
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .logo { height: 20px; filter: drop-shadow(0 0 5px var(--primary-glow)); }
+        .main-title { font-size: 1rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); margin: 0; }
+        
+        /* 소리 버튼 */
+        .sound-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--primary);
+            color: var(--primary); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-family: 'Orbitron'; font-weight: 900;
+            cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
+
+        /* [수정] 스크롤 시 상단 입력창은 계속 보이도록 */
+        .workspace-wrap {
+            position: sticky; top: 46px; z-index: 100;
+            padding: 10px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+        }
+        .decode-machine {
+            background: var(--glass); border: 2px solid var(--glass-border);
+            border-radius: 18px; padding: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .code-display { display: flex; justify-content: center; gap: 6px; }
+        .slot {
+            flex: 1; max-width: 55px; height: 60px;
+            background: #000; border: 2.5px solid #333;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900;
+            color: var(--primary); transition: 0.2s;
+        }
+        .slot.active { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+        .slot.filled { color: #fff; background: rgba(0, 240, 255, 0.05); }
+
+        .control-panel { display: flex; gap: 8px; }
+        .btn {
+            flex: 1; padding: 14px; border: none; border-radius: 15px;
+            font-size: 1.1rem; font-weight: 900; cursor: pointer;
+        }
+        .btn-clear { background: #333; color: #888; }
+        .btn-submit { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: #fff; }
+
+        /* [개선] 4열 그리드 및 하단 여백 결합 */
+        main { flex: 1; padding: 10px; z-index: 10; padding-bottom: 80px; }
+        .morse-grid {
+            width: 100%; display: grid; gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .morse-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 14px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 15px 5px; cursor: pointer; transition: 0.1s;
+        }
+        .morse-btn:active { background: var(--primary); transform: scale(0.9); }
+        .morse-btn:active .m-char { color: #000; }
+        
+        .m-char { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--primary); font-weight: 900; line-height: 1; margin-bottom: 6px; }
+        
+        .m-code { 
+            display: flex; align-items: center; justify-content: center; gap: 3px;
+            background: rgba(0,0,0,0.4); padding: 4px 5px; border-radius: 6px;
+        }
+        .dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+        .dash { width: 14px; height: 6px; background: #fff; border-radius: 3px; }
+
+        /* 성공/시작 화면 */
+        #layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(30px);
+            z-index: 2000; display: none; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        #layer.active { display: flex; }
+        .modal-box { background: var(--glass); padding: 30px; border-radius: 30px; border: 3px solid var(--success); width: 85%; max-width: 320px; }
+
+        /* Failure Layer */
+        #fail-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,0,85,0.2); z-index: 6000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: glitch 0.3s infinite;
+        }
+        #fail-layer.active { display: flex; }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+        .fail-text { font-family: 'Orbitron'; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff0055; font-weight: 900; }
+
+        /* Scanning Layer */
+        #scan-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(15px);
+        }
+        #scan-layer.active { display: flex; }
+        
+        .decode-text {
+            font-family: 'Orbitron'; font-size: 1.4rem; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 5px; margin-top: 25px;
+            animation: blink 0.5s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .progress-bar {
+            width: 200px; height: 12px; border: 1.5px solid var(--primary);
+            margin-top: 25px; position: relative; border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--primary); width: 0%;
+            transition: width 0.6s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        /* Certificate Screen - REBUILT FROM SCRATCH */
+        #screen-certificate {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #001f3f 0%, #000 100%);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #screen-certificate.active { display: flex; }
+
+        .cert-card {
+            background: #fff;
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            max-height: 85vh;
+            border: 15px solid #d4af37;
+            border-radius: 50px;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .cert-logo { height: 40px; margin-bottom: 5px; object-fit: contain; }
+        .cert-title-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .cert-title-boxed {
+            background: #a67c00; width: 105%; padding: 12px 0;
+            margin: 10px 0; transform: scaleX(1);
+        }
+        .cert-title-text { 
+            color: #fff; font-size: 1.2rem; font-weight: 900; margin: 0; 
+            letter-spacing: 5px; text-indent: 5px; text-align: center;
+        }
+
+        .cert-name-section { width: 85%; margin: 5px 0; }
+        .cert-name-input {
+            width: 100%; border: none; border-bottom: 2px solid #ddd;
+            font-size: 1.8rem; text-align: center; padding: 10px;
+            font-family: 'Noto Sans KR'; font-weight: 900; color: #666;
+            background: transparent; outline: none;
+        }
+        .cert-name-input::placeholder { color: #ccc; }
+
+        .cert-date { 
+            font-size: 1rem; color: #888; font-family: 'Orbitron'; 
+            margin-top: -5px; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px;
+        }
+
+        .cert-mascot-main {
+            width: 100%; flex: 1; min-height: 150px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #mascot-preview { width: 160px; height: 160px; object-fit: contain; transition: 0.3s; }
+
+        .mascot-selector { display: flex; gap: 12px; margin: 10px 0; }
+        .mascot-thumb {
+            width: 50px; height: 50px; border-radius: 50%; background: #f8f8f8;
+            border: 3px solid #fff; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden; transition: 0.2s;
+        }
+        .mascot-thumb.active { border-color: #d4af37; transform: scale(1.1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .mascot-thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+        .cert-praise { 
+            font-size: 1.1rem; color: #444; font-weight: 900; 
+            text-align: center; margin-top: auto; margin-bottom: 5px; 
+            letter-spacing: -0.5px; width: 100%;
+        }
+
+        .cert-actions { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+
+        /* Mobile Height Adjustments */
+        @media (max-height: 700px) {
+            .cert-card { padding: 15px 15px; border-width: 10px; }
+            #mascot-preview { width: 120px; height: 120px; }
+            .cert-name-input { font-size: 1.5rem; }
+            .cert-title-boxed { padding: 8px 0; }
+            .cert-praise { font-size: 1rem; }
+        }
+
+        .btn-gold { 
+            background: linear-gradient(135deg, #d4af37, #f1c40f); 
+            color: #000 !important; 
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
+            border: none;
+        }
+        .btn-outline { 
+            background: rgba(255,255,255,0.05); 
+            border: 2px solid rgba(255,255,255,0.2); 
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        .btn-block { width: 100%; padding: 20px; border-radius: 18px; font-size: 1.2rem; font-weight: 900; transition: 0.3s; }
+        .btn-block:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* Screen Transitions */
+        #screen-main { transition: opacity 0.5s; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body onclick="enableAudio()">
+    <video class="video-bg" id="bgVideo" loop playsinline muted>
+        <source src="모스부호_파형.mp4" type="video/mp4">
+    </video>
+
+    <div id="screen-main">
+        <header>
+            <div class="header-left">
+                <img src="logo.webp" alt="천문과학관" class="logo">
+                <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
+            </div>
+            <button class="sound-btn" id="soundBtn" onclick="toggleMute(event)">🔇 OFF</button>
+        </header>
+
+        <div class="workspace-wrap">
+            <div class="decode-machine" id="machine">
+                <div class="code-display">
+                    <div class="slot active" id="slot0"></div>
+                    <div class="slot" id="slot1"></div>
+                    <div class="slot" id="slot2"></div>
+                    <div class="slot" id="slot3"></div>
+                </div>
+                <div class="control-panel">
+                    <button class="btn btn-clear" onclick="clearInput()">지 우 기</button>
+                    <button class="btn btn-submit" onclick="validate()">해 독 하 기</button>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <div class="morse-grid" id="morseGrid"></div>
+        </main>
+    </div>
+
+    <!-- Scanning Transition -->
+    <div id="scan-layer">
+        <div class="scan-line"></div>
+        <div id="scan-portal" style="font-size: 8rem; filter: drop-shadow(0 0 30px var(--primary-glow));">🛰️</div>
+        <div class="decode-text" id="scan-text">SIGNAL SCANNING...</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- Certificate Card Screen -->
+    <div id="screen-certificate">
+        <div class="cert-card" id="cert-card">
+            <img src="logo.webp" class="cert-logo" alt="logo">
+            
+            <div class="cert-title-area">
+                <div class="cert-title-boxed">
+                    <h2 class="cert-title-text">우주 신호 해독 완료 인증서</h2>
+                </div>
+            </div>
+
+            <div class="cert-name-section">
+                <input type="text"
+                    id="cert-name-input"
+                    class="cert-name-input"
+                    placeholder="이름 입력"
+                    maxlength="15"
+                    autocomplete="off">
+                <div id="cert-date" class="cert-date">2026.04.13</div>
+            </div>
+
+            <div class="cert-mascot-main">
+                <img src="assets/images/dogi.webp" id="mascot-preview" alt="선택 마스코트">
+            </div>
+
+            <div class="mascot-selector" id="mascot-selector">
+                <div class="mascot-thumb active" onclick="selectMascot('dogi', this)">
+                    <img src="assets/images/dogi.webp" alt="도기">
+                </div>
+                <div class="mascot-thumb" onclick="selectMascot('raebi', this)">
+                    <img src="assets/images/raebi.webp" alt="래비">
+                </div>
+                <div class="mascot-thumb" onclick="selectMascot('caeti', this)">
+                    <img src="assets/images/caeti.webp" alt="캐티">
+                </div>
+            </div>
+
+            <div class="cert-praise">최고의 암호 분석가입니다! ✨</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="cert-actions" id="cert-actions">
+            <button class="btn btn-gold btn-block" onclick="saveCertificate()">
+                📸 이미지로 저장
+            </button>
+            <button class="btn btn-outline btn-block" onclick="showScreen('screen-main')">
+                ← 돌아가기
+            </button>
+        </div>
+    </div>
+
+    <div id="layer">
+        <div class="modal-box" id="modalBox">
+            <div id="modalIcon" style="font-size: 5rem;">🛸</div>
+            <h2 id="modalTitle" style="font-family: 'Orbitron'; font-size: 2.2rem; color: var(--success); margin: 15px 0;">반갑습니다!</h2>
+            <p id="modalDesc" style="color: #eee; margin-bottom: 25px;">우주 신호 해독을 시작하려면<br>아래 버튼을 눌러주세요.</p>
+            <button class="btn btn-submit" style="width: 100%;" id="modalBtn" onclick="startSystem()">관측 시작하기</button>
+        </div>
+    </div>
+
+    <div id="fail-layer">
+        <div class="fail-text">ACCESS DENIED</div>
+        <div style="color: #fff; margin-top: 10px;">SIGNAL INTERFERENCE DETECTED</div>
+    </div>
+
+    <script>
+        const TARGET = "STAR";
+        const MORSE = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..'
+        };
+
+        const bgVideo = document.getElementById('bgVideo');
+        const soundBtn = document.getElementById('soundBtn');
+        const layer = document.getElementById('layer');
+        const failLayer = document.getElementById('fail-layer');
+        let audioEnabled = false;
+
+        const LETTER_COLORS = {
+            'A': '#FF3D00', 'B': '#3D5AFE', 'C': '#00E676', 'D': '#FFEA00', 'E': '#FF1744',
+            'F': '#D500F9', 'G': '#00B0FF', 'H': '#1DE9B6', 'I': '#C6FF00', 'J': '#FF9100',
+            'K': '#FF3D00', 'L': '#3D5AFE', 'M': '#00E676', 'N': '#FFEA00', 'O': '#FF1744',
+            'P': '#D500F9', 'Q': '#00B0FF', 'R': '#1DE9B6', 'S': '#C6FF00', 'T': '#FF9100',
+            'U': '#FF3D00', 'V': '#3D5AFE', 'W': '#00E676', 'X': '#FFEA00', 'Y': '#FF1744', 'Z': '#D500F9'
+        };
+
+        // 초기 시작 모달 표시
+        window.addEventListener('load', () => {
+            layer.classList.add('active'); 
+        });
+
+        function startSystem() {
+            layer.classList.remove('active');
+            bgVideo.muted = false;
+            bgVideo.play();
+            soundBtn.innerText = "🔊 ON";
+            audioEnabled = true;
+        }
+
+        function toggleMute(e) {
+            e.stopPropagation();
+            if (bgVideo.muted) {
+                bgVideo.muted = false;
+                soundBtn.innerText = "🔊 ON";
+            } else {
+                bgVideo.muted = true;
+                soundBtn.innerText = "🔇 OFF";
+            }
+        }
+
+        // 브라우저 정책 대응 (터치 시 오디오 활성화 시도)
+        function enableAudio() {
+            if(!audioEnabled) {
+                bgVideo.play();
+            }
+        }
+
+        let userInput = [];
+        const grid = document.getElementById('morseGrid');
+        const slots = [
+            document.getElementById('slot0'), document.getElementById('slot1'),
+            document.getElementById('slot2'), document.getElementById('slot3')
+        ];
+
+        Object.keys(MORSE).forEach(key => {
+            const btn = document.createElement('div');
+            btn.className = 'morse-btn';
+            btn.id = `btn-${key}`;
+            let codeHtml = '<div class="m-code">';
+            for (let char of MORSE[key]) {
+                codeHtml += (char === '.') ? '<div class="dot"></div>' : '<div class="dash"></div>';
+            }
+            codeHtml += '</div>';
+            btn.innerHTML = `<span class="m-char">${key}</span>${codeHtml}`;
+            btn.onclick = () => inputLetter(key);
+            grid.appendChild(btn);
+        });
+
+        function inputLetter(key) {
+            if (userInput.length >= 4) return;
+            userInput.push(key);
+            
+            // 버튼 강조
+            const btn = document.getElementById(`btn-${key}`);
+            btn.style.borderColor = LETTER_COLORS[key];
+            btn.style.background = `${LETTER_COLORS[key]}22`;
+            btn.querySelector('.m-char').style.color = LETTER_COLORS[key];
+            
+            updateDisplay();
+        }
+
+        function clearInput() {
+            userInput = [];
+            // 모든 버튼 초기화
+            document.querySelectorAll('.morse-btn').forEach(btn => {
+                btn.style.borderColor = "";
+                btn.style.background = "";
+                btn.querySelector('.m-char').style.color = "";
+            });
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            slots.forEach((slot, idx) => {
+                const char = userInput[idx];
+                slot.innerText = char || "";
+                slot.classList.toggle('active', idx === userInput.length);
+                slot.classList.toggle('filled', idx < userInput.length);
+                
+                if (char) {
+                    slot.style.color = LETTER_COLORS[char];
+                    slot.style.borderColor = LETTER_COLORS[char];
+                    slot.style.boxShadow = `0 0 15px ${LETTER_COLORS[char]}88`;
+                } else {
+                    slot.style.color = "";
+                    slot.style.borderColor = "";
+                    slot.style.boxShadow = "";
+                }
+            });
+        }
+
+        function validate() {
+            if (userInput.length < 4) return;
+            if (userInput.join('') === TARGET) {
+                showSuccess();
+            } else {
+                failLayer.classList.add('active');
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                setTimeout(() => { 
+                    failLayer.classList.remove('active');
+                    clearInput(); 
+                }, 800);
+            }
+        }
+
+        function showSuccess() {
+            const scanLayer = document.getElementById('scan-layer');
+            const progressFill = document.getElementById('progress-fill');
+            const scanText = document.getElementById('scan-text');
+            const scanPortal = document.getElementById('scan-portal');
+
+            // 날짜 업데이트
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+            const dateEl = document.getElementById('cert-date');
+            if (dateEl) dateEl.innerText = dateStr;
+
+            // 시네마틱 연출 시작 (80% 단축)
+            scanLayer.classList.add('active');
+            setTimeout(() => { progressFill.style.width = "100%"; }, 50);
+
+            setTimeout(() => {
+                scanText.innerText = "DECODING COMPLETE!";
+                scanText.style.color = "var(--success)";
+                scanPortal.innerText = "⭐";
+                scanPortal.style.transform = "scale(1.5)";
+            }, 600);
+
+            setTimeout(() => {
+                scanLayer.style.opacity = "0";
+                setTimeout(() => {
+                    scanLayer.classList.remove('active');
+                    scanLayer.style.opacity = "1";
+                    progressFill.style.width = "0%";
+                    scanText.innerText = "SIGNAL SCANNING...";
+                    scanText.style.color = "var(--primary)";
+                    scanPortal.innerText = "🛰️";
+                    showScreen('screen-certificate');
+                }, 300);
+            }, 1000);
+        }
+
+        function showScreen(screenId) {
+            const main = document.getElementById('screen-main');
+            const cert = document.getElementById('screen-certificate');
+            
+            main.classList.add('hidden');
+            cert.classList.remove('active');
+            
+            if (screenId === 'screen-main') {
+                main.classList.remove('hidden');
+                bgVideo.play(); // 메인으로 돌아오면 비디오 재생
+            } else if (screenId === 'screen-certificate') {
+                cert.classList.add('active');
+                bgVideo.pause(); // 결과 화면에서는 비디오 멈춤
+            }
+        }
+
+        async function saveCertificate() {
+            const card = document.getElementById('cert-card');
+            const nameInput = document.getElementById('cert-name-input');
+            const certActions = document.getElementById('cert-actions');
+            
+            // 입력창 포커스 해제
+            nameInput.blur();
+            
+            // 버튼들만 숨기기 (마스코트 선택창은 이제 포함)
+            certActions.style.opacity = "0";
+            
+            // 잠시 대기
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 2, 
+                    backgroundColor: "#ffffff",
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    width: card.offsetWidth,
+                    height: card.offsetHeight
+                });
+                
+                const link = document.createElement('a');
+                link.download = `cosmic_certificate_${nameInput.value || 'explorer'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error('인증서 저장 실패:', err);
+                alert('이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+            } finally {
+                // 버튼 복구
+                certActions.style.opacity = "1";
+            }
+        }
+
+        function selectMascot(name, el) {
+            document.getElementById('mascot-preview').src = `assets/images/${name}.webp`;
+            document.querySelectorAll('.mascot-thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            
+            // 귀여운 애니메이션 효과
+            const preview = document.getElementById('mascot-preview');
+            preview.style.transform = "scale(0.8)";
+            setTimeout(() => { preview.style.transform = "scale(1)"; }, 100);
+        }
+    </script>
+</body>
+</html>

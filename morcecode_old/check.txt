@@ -1,0 +1,1 @@
+qr:data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALMA obs:data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACrgA
