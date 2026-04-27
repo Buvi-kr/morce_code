@@ -222,6 +222,36 @@
         }
         #screen-certificate.active { display: flex; }
 
+        /* --- Login Layer --- */
+        #screen-login {
+            position: fixed; inset: 0; z-index: 9000;
+            background: radial-gradient(circle at center, #0a1526 0%, #000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .login-box {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 40px; width: 100%; max-width: 400px;
+            text-align: center; box-shadow: 0 0 50px var(--primary-glow);
+        }
+        .login-title { 
+            font-family: 'Orbitron', 'Noto Sans KR'; font-size: 1.5rem; 
+            color: var(--primary); margin-bottom: 30px; line-height: 1.4;
+        }
+        .login-input {
+            width: 100%; padding: 15px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            color: #fff; font-size: 1.1rem; text-align: center;
+            font-family: 'Orbitron'; margin-bottom: 20px; outline: none;
+        }
+        .login-btn {
+            width: 100%; padding: 15px; background: var(--primary);
+            color: #000; border: none; border-radius: 12px;
+            font-size: 1.2rem; font-weight: 900; cursor: pointer;
+            font-family: 'Noto Sans KR'; transition: 0.3s;
+        }
+        .login-btn:hover { box-shadow: 0 0 20px var(--primary-glow); }
+
         .cert-card {
             background: #fff; width: 100%; max-width: 360px;
             border: 10px solid #d4af37; border-radius: 32px;
@@ -299,15 +329,10 @@
     <div id="screen-main">
         <header>
             <div class="header-left">
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="logo.webp" alt="logo" class="logo">
-                        <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
-                    </div>
-                    <div class="agent-input-wrap">
-                        <span class="agent-label">AGENT ID:</span>
-                        <input type="text" id="agent-name" class="agent-input" placeholder="AGENT_NAME" maxlength="10">
-                    </div>
+                <img src="logo.webp" alt="logo" class="logo">
+                <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
+                <div style="margin-left: 20px; font-family: 'Orbitron'; font-size: 0.8rem; color: #888;">
+                    AGENT: <span id="display-agent-name" style="color: var(--primary);">---</span>
                 </div>
             </div>
         </header>
@@ -378,6 +403,17 @@
         </div>
     </div>
 
+    <!-- Login Screen -->
+    <div id="screen-login">
+        <div class="login-box">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🛰️</div>
+            <h2 class="login-title">우주에서 온 신호를 해독하라!</h2>
+            <p style="color: #888; margin-bottom: 20px;">모스부호를 풀기 전 당신의 이름을 적어주세요.</p>
+            <input type="text" id="login-agent-name" class="login-input" placeholder="AGENT_ID" maxlength="10">
+            <button class="login-btn" onclick="startMission()">미션 시작</button>
+        </div>
+    </div>
+
     <div id="fail-layer">
         <div class="fail-text">ACCESS DENIED</div>
         <div style="color: #ff0055; margin-top: 10px; font-family: 'Orbitron';">SIGNAL INTERFERENCE</div>
@@ -437,6 +473,7 @@
             const savedData = localStorage.getItem('morse_completed_data');
             if (savedData) {
                 const data = JSON.parse(savedData);
+                document.getElementById('screen-login').classList.add('hidden');
                 document.getElementById('screen-main').classList.add('hidden');
                 document.getElementById('screen-certificate').classList.add('active');
                 
@@ -447,6 +484,17 @@
             }
         }
         window.addEventListener('load', checkCompletion);
+
+        function startMission() {
+            const name = document.getElementById('login-agent-name').value.trim();
+            if (!name) {
+                alert("요원명을 입력해주세요!");
+                return;
+            }
+            document.getElementById('display-agent-name').innerText = name;
+            document.getElementById('screen-login').classList.add('hidden');
+            startTime = Date.now();
+        }
 
         function fireConfetti() {
             const duration = 3 * 1000;
@@ -496,8 +544,6 @@
         function inputLetter(key) {
             if (userInput.length >= 4) return;
             userInput.push(key);
-            
-            if (!startTime) startTime = Date.now();
             
             // 버튼 강조
             const btn = document.getElementById(`btn-${key}`);
@@ -574,7 +620,7 @@
             const m = Math.floor(elapsed / 60);
             const s = elapsed % 60;
             const elapsedStr = `${m}:${String(s).padStart(2, '0')}`;
-            const agentName = document.getElementById('agent-name').value || 'AGENT';
+            const agentName = document.getElementById('display-agent-name').innerText;
 
             document.getElementById('res-nick').innerText = agentName;
             document.getElementById('res-time').innerText = elapsedStr;
