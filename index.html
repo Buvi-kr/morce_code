@@ -401,14 +401,11 @@
 
         // --- Persistence Logic ---
         function checkCompletion() {
-            if (localStorage.getItem('morse_completed') === 'true') {
+            const savedTime = localStorage.getItem('morse_completed_time');
+            if (savedTime) {
                 document.getElementById('screen-main').classList.add('hidden');
                 document.getElementById('screen-certificate').classList.add('active');
-                
-                // Set date to the current time even for returning users
-                const now = new Date();
-                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                document.getElementById('cert-date').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${timeStr}`;
+                document.getElementById('cert-date').innerText = savedTime;
             }
         }
         window.addEventListener('load', checkCompletion);
@@ -502,9 +499,10 @@
             
             const now = new Date();
             const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            document.getElementById('cert-date').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${timeStr}`;
+            const fullDate = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${timeStr}`;
+            document.getElementById('cert-date').innerText = fullDate;
             
-            localStorage.setItem('morse_completed', 'true');
+            localStorage.setItem('morse_completed_time', fullDate);
             
             scan.classList.add('active');
             setTimeout(() => fill.style.width = "100%", 100);
