@@ -277,18 +277,7 @@
         .btn-outline { background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; backdrop-filter: blur(10px); }
 
         /* --- Start Layer --- */
-        #start-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 8000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .start-box { 
-            background: var(--glass); padding: 40px; border-radius: 30px; 
-            border: 1px solid var(--primary); text-align: center;
-            box-shadow: 0 0 50px var(--primary-glow);
-        }
-        .start-icon { font-size: 5rem; margin-bottom: 20px; animation: float 3s infinite ease-in-out; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .hidden { display: none !important; }
 
         .hidden { display: none !important; }
 
@@ -309,7 +298,6 @@
                 <img src="logo.webp" alt="logo" class="logo">
                 <h1 class="main-title">COSMIC DECODER</h1>
             </div>
-            <button class="sound-toggle" id="soundToggle" onclick="toggleMute()">🔊 SOUND</button>
         </header>
 
         <div class="workspace-wrap">
@@ -367,19 +355,9 @@
         </div>
     </div>
 
-    <!-- Fail Layer -->
     <div id="fail-layer">
         <div class="fail-text">ACCESS DENIED</div>
         <div style="color: #ff0055; margin-top: 10px; font-family: 'Orbitron';">SIGNAL INTERFERENCE</div>
-    </div>
-
-    <!-- Start Layer -->
-    <div id="start-layer" onclick="initSystem()">
-        <div class="start-box">
-            <div class="start-icon">🛸</div>
-            <h2 style="font-family: 'Orbitron'; color: var(--primary);">SYSTEM STANDBY</h2>
-            <p style="color: #888;">화면을 터치하여 시스템을 활성화하십시오.</p>
-        </div>
     </div>
 
     <script>
@@ -409,12 +387,11 @@
 
         // --- State ---
         let userInput = [];
-        let audioCtx = null;
-        let isMuted = false;
 
         // --- Starfield Initialization ---
         function createStars() {
             const container = document.getElementById('stars');
+            if (!container) return;
             for(let i=0; i<150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -430,45 +407,7 @@
         }
         createStars();
 
-        // --- Audio System ---
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playBeep(type) {
-            if (isMuted || !audioCtx) return;
-            const duration = type === '.' ? 0.1 : 0.3;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-            
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            const btn = document.getElementById('soundToggle');
-            btn.innerText = isMuted ? "🔇 MUTED" : "🔊 SOUND";
-            btn.classList.toggle('muted', isMuted);
-        }
-
         // --- Core Logic ---
-        function initSystem() {
-            initAudio();
-            document.getElementById('start-layer').classList.add('hidden');
-        }
-
         const grid = document.getElementById('morseGrid');
         Object.keys(MORSE).forEach(key => {
             const btn = document.createElement('div');
@@ -499,13 +438,6 @@
                 btn.querySelector('.m-char').style.color = LETTER_COLORS[key];
             }
             
-            // Play beeps for the code
-            let delay = 0;
-            MORSE[key].split('').forEach(char => {
-                setTimeout(() => playBeep(char), delay);
-                delay += (char === '.' ? 150 : 350);
-            });
-
             updateDisplay();
         }
 
