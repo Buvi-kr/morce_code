@@ -129,24 +129,28 @@
         }
 
         .morse-btn {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px; display: flex; flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 14px; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            padding: 18px 5px; cursor: pointer; transition: 0.2s;
+            padding: 12px 5px; cursor: pointer; transition: 0.2s;
         }
-        .morse-btn:hover { background: rgba(255,255,255,0.06); }
-        .morse-btn:active { background: var(--primary); transform: scale(0.92); }
-        .morse-btn:active .m-char { color: #000; }
+        .morse-btn.active { 
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
         
-        .m-char { font-family: 'Orbitron'; font-size: 1.8rem; color: var(--primary); font-weight: 900; line-height: 1; margin-bottom: 8px; }
+        .m-char { 
+            font-family: 'Orbitron'; font-size: 1.6rem; color: var(--primary); 
+            font-weight: 900; line-height: 1; margin-bottom: 6px;
+        }
         
         .m-code { 
             display: flex; align-items: center; justify-content: center; gap: 4px;
-            background: rgba(0,0,0,0.5); padding: 5px 8px; border-radius: 8px;
+            background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 6px;
         }
-        .dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; box-shadow: 0 0 5px #fff; }
-        .dash { width: 16px; height: 6px; background: #fff; border-radius: 3px; box-shadow: 0 0 5px #fff; }
+        .dot { width: 5px; height: 5px; background: #fff; border-radius: 50%; }
+        .dash { width: 14px; height: 5px; background: #fff; border-radius: 3px; }
 
         /* --- Transitions Layers --- */
         #fail-layer {
@@ -211,21 +215,23 @@
         #screen-certificate.active { display: flex; }
 
         .cert-card {
-            background: #fff; width: 100%; max-width: 400px;
-            border: 15px solid #d4af37; border-radius: 40px;
-            padding: 40px 20px; display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8); position: relative;
+            background: #fff; width: 100%; max-width: 360px;
+            border: 12px solid #d4af37; border-radius: 40px;
+            padding: 25px 20px; display: flex; flex-direction: column;
+            align-items: center; box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            position: relative;
         }
         .cert-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/paper.png');
-            opacity: 0.2; pointer-events: none;
+            content: ''; position: absolute; inset: 5px;
+            border: 2px solid #d4af37; border-radius: 32px; pointer-events: none;
+            opacity: 0.3;
         }
 
         .cert-logo { height: 45px; margin-bottom: 10px; z-index: 1; }
         .cert-title-boxed {
-            background: #a67c00; width: 108%; padding: 15px 0;
+            background: #a67c00; width: calc(100% + 30px); padding: 12px 0;
             margin: 15px 0; transform: rotate(-1deg); z-index: 1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         .cert-title-text { 
             color: #fff; font-size: 1.3rem; font-weight: 900; margin: 0; 
@@ -234,15 +240,14 @@
 
         .cert-name-section { width: 90%; margin: 15px 0; text-align: center; z-index: 1; }
         .cert-name-input {
-            width: 100%; border: none; border-bottom: 3px solid #eee;
-            font-size: 2rem; text-align: center; padding: 10px;
-            font-family: 'Noto Sans KR'; font-weight: 900; color: #333;
-            background: transparent;
+            width: 100%; border: none; border-bottom: 2px solid #ddd;
+            font-size: 1.6rem; text-align: center; padding: 5px;
+            font-family: 'Noto Sans KR'; font-weight: 900; color: #444;
+            background: transparent; outline: none;
         }
-        .cert-date { font-family: 'Orbitron'; color: #aaa; margin-top: 10px; font-weight: 700; }
-
-        .cert-mascot-main { height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; z-index: 1; }
-        #mascot-preview { height: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); }
+        .cert-date { font-size: 0.9rem; color: #888; font-family: 'Orbitron'; margin-top: 5px; font-weight: 700; }
+        .cert-mascot { width: 140px; height: 140px; object-fit: contain; margin: 10px 0; z-index: 1; }
+        #mascot-preview { height: 100%; object-fit: contain; }
 
         .mascot-selector { display: flex; gap: 15px; margin-bottom: 20px; z-index: 1; }
         .mascot-thumb {
@@ -254,8 +259,12 @@
 
         .cert-praise { font-weight: 900; color: #555; text-align: center; line-height: 1.4; z-index: 1; }
 
-        .cert-actions { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #d4af37, #f1c40f); color: #000; box-shadow: 0 15px 30px rgba(212,175,55,0.3); }
+        .cert-actions { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .btn-gold { 
+            background: linear-gradient(135deg, #d4af37, #f1c40f); 
+            color: #000 !important; font-weight: 900;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
         .btn-outline { background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; backdrop-filter: blur(10px); }
 
         /* --- Start Layer --- */
@@ -334,17 +343,9 @@
             </div>
             <div class="cert-name-section">
                 <input type="text" id="cert-name-input" class="cert-name-input" placeholder="이름 입력" maxlength="10">
-                <div id="cert-date" class="cert-date"></div>
-            </div>
-            <div class="cert-mascot-main">
-                <img src="assets/images/dogi.webp" id="mascot-preview" alt="mascot">
-            </div>
-            <div class="mascot-selector">
-                <div class="mascot-thumb active" onclick="selectMascot('dogi', this)"><img src="assets/images/dogi.webp"></div>
-                <div class="mascot-thumb" onclick="selectMascot('raebi', this)"><img src="assets/images/raebi.webp"></div>
-                <div class="mascot-thumb" onclick="selectMascot('caeti', this)"><img src="assets/images/caeti.webp"></div>
-            </div>
-            <div class="cert-praise">축하합니다! 당신은 우주에서 온 신호를<br>성공적으로 해독해낸 최고의 요원입니다.</div>
+            <div id="cert-date" class="cert-date"></div>
+            <img src="assets/images/caeti.webp" id="mascot-preview" class="cert-mascot" alt="Mascot">
+            <div class="cert-praise">최고의 암호 분석가입니다! ✨</div>
         </div>
         <div class="cert-actions">
             <button class="btn btn-gold" onclick="saveCertificate()">📸 이미지 저장하기</button>
@@ -376,6 +377,13 @@
             'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
             'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
             'Y': '-.--', 'Z': '--..'
+        };
+        const LETTER_COLORS = {
+            'A': '#FF3D00', 'B': '#3D5AFE', 'C': '#00E676', 'D': '#FFEA00', 'E': '#FF1744',
+            'F': '#D500F9', 'G': '#00B0FF', 'H': '#1DE9B6', 'I': '#C6FF00', 'J': '#FF9100',
+            'K': '#FF3D00', 'L': '#3D5AFE', 'M': '#00E676', 'N': '#FFEA00', 'O': '#FF1744',
+            'P': '#D500F9', 'Q': '#00B0FF', 'R': '#1DE9B6', 'S': '#C6FF00', 'T': '#FF9100',
+            'U': '#FF3D00', 'V': '#3D5AFE', 'W': '#00E676', 'X': '#FFEA00', 'Y': '#FF1744', 'Z': '#D500F9'
         };
         const COLORS = {
             'A': '#FF3D00', 'B': '#3D5AFE', 'C': '#00E676', 'D': '#FFEA00', 'E': '#FF1744',
@@ -451,6 +459,7 @@
         Object.keys(MORSE).forEach(key => {
             const btn = document.createElement('div');
             btn.className = 'morse-btn';
+            btn.id = `btn-${key}`;
             btn.innerHTML = `<span class="m-char">${key}</span><div class="m-code">${
                 MORSE[key].split('').map(c => `<div class="${c === '.' ? 'dot' : 'dash'}"></div>`).join('')
             }</div>`;
@@ -467,6 +476,15 @@
             if (userInput.length >= 4) return;
             userInput.push(key);
             
+            // 버튼 강조
+            const btn = document.getElementById(`btn-${key}`);
+            if (btn) {
+                btn.classList.add('active');
+                btn.style.borderColor = LETTER_COLORS[key];
+                btn.style.background = `${LETTER_COLORS[key]}22`;
+                btn.querySelector('.m-char').style.color = LETTER_COLORS[key];
+            }
+            
             // Play beeps for the code
             let delay = 0;
             MORSE[key].split('').forEach(char => {
@@ -479,6 +497,13 @@
 
         function clearInput() {
             userInput = [];
+            // 모든 버튼 초기화
+            document.querySelectorAll('.morse-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.borderColor = "";
+                btn.style.background = "";
+                btn.querySelector('.m-char').style.color = "";
+            });
             updateDisplay();
         }
 
@@ -524,7 +549,8 @@
             const fill = document.getElementById('progress-fill');
             
             const now = new Date();
-            document.getElementById('cert-date').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('cert-date').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${timeStr}`;
             
             scan.classList.add('active');
             setTimeout(() => fill.style.width = "100%", 100);
@@ -539,11 +565,7 @@
             }, 1500);
         }
 
-        function selectMascot(name, el) {
-            document.getElementById('mascot-preview').src = `assets/images/${name}.webp`;
-            document.querySelectorAll('.mascot-thumb').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
+        // Mascot selection removed as per user request (Fixed to Caeti)
 
         async function saveCertificate() {
             const card = document.getElementById('cert-card');
