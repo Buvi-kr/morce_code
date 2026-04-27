@@ -58,17 +58,10 @@
         .header-left { display: flex; align-items: center; gap: 12px; }
         .logo { height: 28px; filter: drop-shadow(0 0 8px var(--primary-glow)); }
         .main-title { 
-            font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 800; 
+            font-family: 'Orbitron', 'Noto Sans KR'; font-size: 1.1rem; font-weight: 800; 
             color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); margin: 0;
-            letter-spacing: 1px;
+            letter-spacing: 0px;
         }
-        .sound-toggle {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            color: var(--primary); padding: 8px 12px; border-radius: 12px;
-            font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer;
-            transition: 0.3s;
-        }
-        .sound-toggle.muted { color: #555; }
 
         /* --- Workspace --- */
         .workspace-wrap {
@@ -296,7 +289,7 @@
         <header>
             <div class="header-left">
                 <img src="logo.webp" alt="logo" class="logo">
-                <h1 class="main-title">COSMIC DECODER</h1>
+                <h1 class="main-title">우주에서 온 신호를 해독하라!</h1>
             </div>
         </header>
 
@@ -310,7 +303,7 @@
                 </div>
                 <div class="control-panel">
                     <button class="btn btn-clear" onclick="clearInput()">지우기</button>
-                    <button class="btn btn-submit" onclick="validate()">해독 시스템 가동</button>
+                    <button class="btn btn-submit" onclick="validate()">해독 시작</button>
                 </div>
             </div>
         </div>
@@ -350,7 +343,6 @@
         <div class="cert-bottom-area">
             <div class="cert-actions">
                 <button class="btn btn-gold" onclick="saveCertificate()">📸 이미지 저장하기</button>
-                <button class="btn btn-outline" onclick="location.reload()">처음으로</button>
             </div>
         </div>
     </div>
