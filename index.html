@@ -1103,24 +1103,30 @@
             const card = document.getElementById('cert-card');
             const btn = document.querySelector('.btn-gold');
 
-            // UI 피드백: 로딩 상태 표시
             const originalText = btn.innerText;
-            btn.innerText = "⏳ 이미지 생성 중...";
+            btn.innerText = "⏳ 이미지 굽는 중...";
             btn.disabled = true;
 
+            // 🌟 핵심 1: 투명도 버그 방지를 위해 캡처 직전 애니메이션 강제 해제
+            const originalAnimation = card.style.animation;
+            card.style.animation = 'none';
+            card.style.opacity = '1';
+            card.style.transform = 'none';
+
+            // DOM이 스타일 변경을 반영할 수 있도록 아주 잠시 대기
+            await new Promise(resolve => setTimeout(resolve, 50));
+
             try {
-                // 이미지 로드 완벽 보장
                 const imgs = card.getElementsByTagName('img');
                 await Promise.all(Array.from(imgs).map(img => {
                     if (img.complete) return Promise.resolve();
                     return new Promise(res => { img.onload = res; img.onerror = res; });
                 }));
 
-                // 요소가 화면에 보이는 상태(display: flex)에서 캡처 진행
                 const canvas = await html2canvas(card, {
                     scale: 2,
                     useCORS: true,
-                    backgroundColor: "#ffffff",
+                    backgroundColor: null, // 🌟 핵심 2: 둥근 모서리 바깥쪽 하얀 여백을 투명하게 처리
                     logging: false
                 });
 
@@ -1134,22 +1140,21 @@
                         link.click();
                         document.body.removeChild(link);
                         URL.revokeObjectURL(url); // 메모리 누수 방지
-                    } else {
-                        throw new Error("Blob 생성 실패");
                     }
                     restoreBtn();
                 }, 'image/png');
 
             } catch (e) {
                 console.error("Rendering failed:", e);
-                alert("이미지 저장에 실패했습니다. 다운로드가 안 된다면 화면을 꾹 눌러 저장하거나 캡처해주세요!");
+                alert("이미지 저장에 실패했습니다. 다운로드가 안 된다면 화면을 캡처해주세요!");
                 restoreBtn();
             }
 
-            // UI 복구 함수
+            // 버튼 및 애니메이션 상태 원상 복구
             function restoreBtn() {
                 btn.innerText = originalText;
                 btn.disabled = false;
+                card.style.animation = originalAnimation;
             }
         }
     </script>
