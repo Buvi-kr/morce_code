@@ -1055,9 +1055,6 @@
             }, 1000);
         }
 
-        // 전역 변수로 이미지 데이터 저장
-        let preparedCertBlobUrl = null;
-
         function showSuccess() {
             const scan = document.getElementById('scan-layer');
             const fill = document.getElementById('progress-fill');
@@ -1089,66 +1086,71 @@
             scan.classList.add('active');
             setTimeout(() => fill.style.width = "100%", 100);
 
-            // 3. 배경에서 이미지 미리 굽기
-            setTimeout(async () => {
-                const card = document.getElementById('cert-card');
-                
-                // 이미지 로드 대기
+            // 3. 화면 전환 (미리 굽기 로직 제거, 바로 인증서 화면으로 이동)
+            setTimeout(() => {
+                scan.style.opacity = "0";
+                setTimeout(() => {
+                    scan.classList.remove('active');
+                    document.getElementById('screen-main').classList.add('hidden');
+                    document.getElementById('screen-certificate').classList.add('active');
+                    fireConfetti();
+                }, 500);
+            }, 1500); // 게이지 차오르는 시간 대기
+        }
+
+        async function saveCertificate() {
+            const name = document.getElementById('display-agent-name').innerText;
+            const card = document.getElementById('cert-card');
+            const btn = document.querySelector('.btn-gold');
+
+            // UI 피드백: 로딩 상태 표시
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ 이미지 생성 중...";
+            btn.disabled = true;
+
+            try {
+                // 이미지 로드 완벽 보장
                 const imgs = card.getElementsByTagName('img');
                 await Promise.all(Array.from(imgs).map(img => {
                     if (img.complete) return Promise.resolve();
                     return new Promise(res => { img.onload = res; img.onerror = res; });
                 }));
 
-                try {
-                    const canvas = await html2canvas(card, {
-                        scale: 2,
-                        useCORS: true,
-                        backgroundColor: "#ffffff",
-                        logging: false
-                    });
-                    
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            preparedCertBlobUrl = URL.createObjectURL(blob);
-                            console.log("Certificate image prepared.");
-                        }
-                    }, 'image/png');
-                } catch (e) {
-                    console.error("Pre-rendering failed:", e);
-                }
+                // 요소가 화면에 보이는 상태(display: flex)에서 캡처 진행
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: "#ffffff",
+                    logging: false
+                });
 
-                // 4. 화면 전환 (이미지가 다 안 구워졌어도 일단 화면은 보여줌)
-                setTimeout(() => {
-                    scan.style.opacity = "0";
-                    setTimeout(() => {
-                        scan.classList.remove('active');
-                        document.getElementById('screen-main').classList.add('hidden');
-                        document.getElementById('screen-certificate').classList.add('active');
-                        fireConfetti();
-                    }, 500);
-                }, 500);
-            }, 1000);
-        }
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `Cosmic_Cert_${name}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url); // 메모리 누수 방지
+                    } else {
+                        throw new Error("Blob 생성 실패");
+                    }
+                    restoreBtn();
+                }, 'image/png');
 
-        function saveCertificate() {
-            if (!preparedCertBlobUrl) {
-                alert("인증서 이미지를 준비 중입니다. 잠시만 기다려주세요!");
-                return;
+            } catch (e) {
+                console.error("Rendering failed:", e);
+                alert("이미지 저장에 실패했습니다. 다운로드가 안 된다면 화면을 꾹 눌러 저장하거나 캡처해주세요!");
+                restoreBtn();
             }
 
-            const name = document.getElementById('display-agent-name').innerText;
-            const link = document.createElement('a');
-            link.href = preparedCertBlobUrl;
-            link.download = `Cosmic_Cert_${name}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // 인앱 브라우저 안내
-            setTimeout(() => {
-                alert("이미지 저장을 시도했습니다. 다운로드가 안 된다면 화면을 꾹 눌러서 저장하거나 캡처해주세요!");
-            }, 500);
+            // UI 복구 함수
+            function restoreBtn() {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
